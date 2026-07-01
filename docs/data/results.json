@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T16:33:10Z",
+  "generated_at": "2026-07-01T19:12:16Z",
   "criteria": {
     "max_price": 2.0,
     "min_price": 0.05,
@@ -8,7 +8,25 @@
   },
   "counts": {
     "match": 0,
-    "watch": 0
+    "watch": 1
   },
-  "results": []
+  "results": [
+    {
+      "ticker": "HIT",
+      "status": "watch",
+      "current_price": 1.0502,
+      "expected_low": 0.9231,
+      "expected_high": 1.1773,
+      "year_high": 4.02,
+      "year_low": 0.81,
+      "bandwidth_percentile": 0.83,
+      "avg_dollar_volume": 153826.84,
+      "volume_ratio": 1.0123,
+      "expansion_progress": 0.8803,
+      "notes": [
+        "Volume approaching expansion trigger (88% of the way there).",
+        "Bollinger band-width at 0.8th percentile of last 120 days."
+      ]
+    }
+  ]
 }
