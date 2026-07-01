@@ -76,6 +76,48 @@ projection:
   atr_period: 14
   atr_multiplier: 1.5
 
+confirmations:
+  # Secondary indicator votes, applied only to tickers that already passed
+  # the core filters (price cap, Bollinger squeeze, SMA trend, volume
+  # contraction/expansion). Each enabled indicator casts one bullish yes/no
+  # vote; a ticker needs at least min_required votes to make the report.
+  # Every vote (pass/fail + value) is saved to results.json so the UI can
+  # show why a ticker qualified. Disable any indicator with enabled: false.
+  min_required: 5
+
+  rsi:                    # Relative Strength Index
+    enabled: true
+    period: 14
+    min: 50               # bullish side of the range...
+    max: 75               # ...but not already overbought
+  macd:                   # MACD line above its signal line
+    enabled: true
+    fast: 12
+    slow: 26
+    signal: 9
+  momentum:               # N-day rate of change must be positive
+    enabled: true
+    period: 10
+  lsma:                   # price above a rising least-squares (linear regression) MA
+    enabled: true
+    period: 25
+  ema:                    # price above the exponential MA
+    enabled: true
+    period: 21
+  ichimoku:               # price above the Ichimoku cloud (span A/B)
+    enabled: true
+    conversion: 9
+    base: 26
+    span_b: 52
+  vwap:                   # price above rolling volume-weighted average price
+    enabled: true
+    period: 20
+  mfi:                    # Money Flow Index (volume-weighted RSI), bullish band
+    enabled: true
+    period: 14
+    min: 50
+    max: 85
+
 email:
   # Email is entirely optional. If any of the 5 secrets below aren't set as
   # environment variables (e.g. you haven't added them as GitHub Actions

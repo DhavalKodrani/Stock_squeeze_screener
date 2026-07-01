@@ -70,6 +70,18 @@ function renderTable() {
     const tr = document.createElement("tr");
     const pct = Math.min(100, Math.round((r.expansion_progress ?? 0) * 100));
     const done = r.status === "match";
+
+    // Signals cell: "6/8" with a hover tooltip listing every indicator vote
+    // (RSI, MACD, Momentum, LSMA, EMA, Ichimoku, VWAP, MFI).
+    let signalsHtml = "&ndash;";
+    if (r.confirmations_total) {
+      const tip = Object.entries(r.indicators || {})
+        .map(([k, d]) => `${d.pass ? "✓" : "✗"} ${k.toUpperCase()}${d.value !== null && d.value !== undefined ? " = " + d.value : ""} — ${d.desc}`)
+        .join("\n");
+      const cls = r.confirmations_passed === r.confirmations_total ? "sig-all" : "sig-some";
+      signalsHtml = `<span class="signals ${cls}" title="${tip.replace(/"/g, "&quot;")}">${r.confirmations_passed}/${r.confirmations_total}</span>`;
+    }
+
     tr.innerHTML = `
       <td class="ticker">${r.ticker}</td>
       <td><span class="badge ${r.status}">${r.status === "match" ? "TRIGGERED" : "WATCH"}</span></td>
@@ -83,6 +95,7 @@ function renderTable() {
           <span>${pct}%</span>
         </div>
       </td>
+      <td>${signalsHtml}</td>
       <td class="notes">${(r.notes || []).join("<br>")}</td>
     `;
     body.appendChild(tr);

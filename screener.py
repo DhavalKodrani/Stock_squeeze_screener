@@ -94,6 +94,9 @@ class ScreenResult:
     status: str = "watch"           # "match" (volume confirmed) or "watch" (approaching expansion)
     volume_ratio: Optional[float] = None      # latest_volume / long_avg
     expansion_progress: Optional[float] = None  # volume_ratio / expansion_multiplier; >=1.0 means triggered
+    confirmations_passed: Optional[int] = None   # of the enabled confirmation indicators
+    confirmations_total: Optional[int] = None
+    indicators: dict = field(default_factory=dict)  # per-indicator {"pass", "value", "desc"}
     notes: List[str] = field(default_factory=list)
 
 
@@ -221,6 +224,110 @@ def compute_moving_averages(df: pd.DataFrame, fast: int, slow: int) -> pd.DataFr
 
 
 # --------------------------------------------------------------------------- #
+# Confirmation indicators (RSI, MACD, Momentum, LSMA, EMA, Ichimoku, VWAP, MFI)
+#
+# These run only on tickers that already passed the core filters (price cap,
+# Bollinger squeeze, SMA trend, volume pattern). Each enabled indicator casts
+# a bullish yes/no vote; the ticker needs at least confirmations.min_required
+# votes to survive. Every vote (pass or fail, with its value) is recorded in
+# results.json so the UI can show exactly why a ticker made the cut.
+# --------------------------------------------------------------------------- #
+
+def evaluate_confirmations(df: pd.DataFrame, cfg: dict) -> tuple:
+    """Returns (passed_count, enabled_count, details_dict).
+    details_dict: name -> {"pass": bool, "value": float|None, "desc": str}"""
+    c_cfg = cfg.get("confirmations") or {}
+    close, high, low, vol = df["Close"], df["High"], df["Low"], df["Volume"]
+    price = float(close.iloc[-1])
+    details = {}
+
+    def record(name: str, desc: str, fn) -> None:
+        conf = c_cfg.get(name, {})
+        if not conf.get("enabled", False):
+            return
+        try:
+            passed, value = fn(conf)
+            if value is not None and (pd.isna(value)):
+                passed, value = False, None
+            details[name] = {"pass": bool(passed), "value": value, "desc": desc}
+        except Exception:
+            details[name] = {"pass": False, "value": None, "desc": desc + " (insufficient data)"}
+
+    def rsi_check(conf):
+        period = conf.get("period", 14)
+        delta = close.diff()
+        gain = delta.clip(lower=0).ewm(alpha=1 / period, adjust=False).mean()
+        loss = (-delta.clip(upper=0)).ewm(alpha=1 / period, adjust=False).mean()
+        rs = gain / loss.replace(0, np.nan)
+        rsi = float((100 - 100 / (1 + rs)).iloc[-1])
+        return conf.get("min", 50) <= rsi <= conf.get("max", 75), round(rsi, 2)
+
+    def macd_check(conf):
+        fast, slow, sig_p = conf.get("fast", 12), conf.get("slow", 26), conf.get("signal", 9)
+        macd = close.ewm(span=fast, adjust=False).mean() - close.ewm(span=slow, adjust=False).mean()
+        signal = macd.ewm(span=sig_p, adjust=False).mean()
+        hist = float(macd.iloc[-1] - signal.iloc[-1])
+        return hist > 0, round(hist, 4)
+
+    def momentum_check(conf):
+        period = conf.get("period", 10)
+        roc = price / float(close.iloc[-period - 1]) - 1.0
+        return roc > 0, round(roc * 100, 2)
+
+    def lsma_check(conf):
+        period = conf.get("period", 25)
+        window = close.tail(period).to_numpy(dtype=float)
+        x = np.arange(len(window))
+        slope, intercept = np.polyfit(x, window, 1)
+        lsma = float(slope * (len(window) - 1) + intercept)
+        return price > lsma and slope > 0, round(lsma, 4)
+
+    def ema_check(conf):
+        period = conf.get("period", 21)
+        ema = float(close.ewm(span=period, adjust=False).mean().iloc[-1])
+        return price > ema, round(ema, 4)
+
+    def ichimoku_check(conf):
+        conv_p = conf.get("conversion", 9)
+        base_p = conf.get("base", 26)
+        span_b_p = conf.get("span_b", 52)
+        conv = (high.rolling(conv_p).max() + low.rolling(conv_p).min()) / 2
+        base = (high.rolling(base_p).max() + low.rolling(base_p).min()) / 2
+        span_a = ((conv + base) / 2).shift(base_p)
+        span_b = ((high.rolling(span_b_p).max() + low.rolling(span_b_p).min()) / 2).shift(base_p)
+        cloud_top = float(max(span_a.iloc[-1], span_b.iloc[-1]))
+        return price > cloud_top, round(cloud_top, 4)
+
+    def vwap_check(conf):
+        period = conf.get("period", 20)
+        tp = (high + low + close) / 3
+        vwap = float(((tp * vol).rolling(period).sum() / vol.rolling(period).sum()).iloc[-1])
+        return price > vwap, round(vwap, 4)
+
+    def mfi_check(conf):
+        period = conf.get("period", 14)
+        tp = (high + low + close) / 3
+        mf = tp * vol
+        pos = mf.where(tp > tp.shift(1), 0.0).rolling(period).sum()
+        neg = mf.where(tp < tp.shift(1), 0.0).rolling(period).sum()
+        ratio = pos / neg.replace(0, np.nan)
+        mfi = float((100 - 100 / (1 + ratio)).iloc[-1])
+        return conf.get("min", 50) <= mfi <= conf.get("max", 85), round(mfi, 2)
+
+    record("rsi", "RSI in bullish-but-not-overbought band", rsi_check)
+    record("macd", "MACD line above signal line", macd_check)
+    record("momentum", "N-day rate of change positive (%)", momentum_check)
+    record("lsma", "Price above rising least-squares MA", lsma_check)
+    record("ema", "Price above EMA", ema_check)
+    record("ichimoku", "Price above the Ichimoku cloud", ichimoku_check)
+    record("vwap", "Price above rolling VWAP", vwap_check)
+    record("mfi", "Money Flow Index in bullish band", mfi_check)
+
+    passed = sum(1 for d in details.values() if d["pass"])
+    return passed, len(details), details
+
+
+# --------------------------------------------------------------------------- #
 # Screening logic
 # --------------------------------------------------------------------------- #
 
@@ -306,6 +413,14 @@ def evaluate_ticker(ticker: str, df: pd.DataFrame, cfg: dict) -> Optional[Screen
     else:
         return None
 
+    # --- Confirmation indicators (RSI, MACD, Momentum, LSMA, EMA, Ichimoku,
+    # VWAP, MFI) -- each enabled one casts a bullish yes/no vote ---
+    conf_passed, conf_total, indicators = evaluate_confirmations(df, cfg)
+    if conf_total:
+        min_required = min(cfg.get("confirmations", {}).get("min_required", conf_total), conf_total)
+        if conf_passed < min_required:
+            return None
+
     # --- Projection (ATR-based expected range) ---
     atr = compute_atr(df, proj_cfg["atr_period"]).iloc[-1]
     if pd.isna(atr):
@@ -322,6 +437,12 @@ def evaluate_ticker(ticker: str, df: pd.DataFrame, cfg: dict) -> Optional[Screen
     elif status == "watch":
         notes.append(f"Volume approaching expansion trigger ({expansion_progress * 100:.0f}% of the way there).")
     notes.append(f"Bollinger band-width at {percentile:.1f}th percentile of last {bb_cfg['squeeze_lookback_days']} days.")
+    if conf_total:
+        failed = [n for n, d in indicators.items() if not d["pass"]]
+        summary = f"Indicator confirmations: {conf_passed}/{conf_total} passed."
+        if failed:
+            summary += f" Failed: {', '.join(f.upper() for f in failed)}."
+        notes.append(summary)
 
     return ScreenResult(
         ticker=ticker,
@@ -335,6 +456,9 @@ def evaluate_ticker(ticker: str, df: pd.DataFrame, cfg: dict) -> Optional[Screen
         status=status,
         volume_ratio=round(volume_ratio, 4) if volume_ratio is not None else None,
         expansion_progress=expansion_progress,
+        confirmations_passed=conf_passed if conf_total else None,
+        confirmations_total=conf_total if conf_total else None,
+        indicators=indicators,
         notes=notes,
     )
 
@@ -381,7 +505,7 @@ def _write_progress_file(path: str, total: int, ordered_tickers: List[str], stat
         "status": [state.get(t, "pending") for t in ordered_tickers],
     }
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f)
 
 
@@ -490,9 +614,25 @@ def build_html_report(results: List[ScreenResult], cfg: dict) -> str:
     date_str = datetime.now().strftime("%Y-%m-%d %H:%M %Z") or datetime.now().strftime("%Y-%m-%d %H:%M")
     price_cfg = cfg["price_filter"]
 
+    c_cfg = cfg.get("confirmations") or {}
+    enabled = [k for k, v in c_cfg.items() if isinstance(v, dict) and v.get("enabled")]
+    if enabled:
+        min_req = min(c_cfg.get("min_required", len(enabled)), len(enabled))
+        criteria_conf = (f", plus at least {min_req} of {len(enabled)} indicator confirmations "
+                         f"({', '.join(e.upper() for e in enabled)})")
+    else:
+        criteria_conf = ""
+
     rows = ""
     for r in sorted(results, key=lambda x: x.bandwidth_percentile):
         notes_html = "<br>".join(r.notes)
+        if r.confirmations_total:
+            detail = ", ".join(
+                f"{'✓' if d['pass'] else '✗'}{name.upper()}" for name, d in r.indicators.items()
+            )
+            signals_html = f"{r.confirmations_passed}/{r.confirmations_total}<br><span style='font-size:11px;color:#777;'>{detail}</span>"
+        else:
+            signals_html = "&ndash;"
         rows += f"""
         <tr>
           <td style="padding:8px;border:1px solid #ddd;font-weight:bold;">{r.ticker}</td>
@@ -501,6 +641,7 @@ def build_html_report(results: List[ScreenResult], cfg: dict) -> str:
           <td style="padding:8px;border:1px solid #ddd;">${r.year_high:.4f}</td>
           <td style="padding:8px;border:1px solid #ddd;">${r.year_low:.4f}</td>
           <td style="padding:8px;border:1px solid #ddd;">${r.avg_dollar_volume:,.0f}</td>
+          <td style="padding:8px;border:1px solid #ddd;">{signals_html}</td>
           <td style="padding:8px;border:1px solid #ddd;font-size:12px;color:#555;">{notes_html}</td>
         </tr>"""
 
@@ -517,6 +658,7 @@ def build_html_report(results: List[ScreenResult], cfg: dict) -> str:
               <th style="padding:8px;border:1px solid #ddd;text-align:left;">52-Wk High</th>
               <th style="padding:8px;border:1px solid #ddd;text-align:left;">52-Wk Low</th>
               <th style="padding:8px;border:1px solid #ddd;text-align:left;">Avg $ Volume</th>
+              <th style="padding:8px;border:1px solid #ddd;text-align:left;">Signals</th>
               <th style="padding:8px;border:1px solid #ddd;text-align:left;">Notes</th>
             </tr>
           </thead>
@@ -528,7 +670,7 @@ def build_html_report(results: List[ScreenResult], cfg: dict) -> str:
     <body style="font-family:Arial,sans-serif;color:#111;">
       <h2>Stock Squeeze Screener &mdash; {date_str}</h2>
       <p>Criteria: price under ${price_cfg['max_price']:.2f}, Bollinger Band squeeze,
-      early-stage uptrend structure, volume contraction followed by expansion.</p>
+      early-stage uptrend structure, volume contraction followed by expansion{criteria_conf}.</p>
       {body_table}
       <p style="font-size:11px;color:#888;margin-top:24px;">
         This is an automated technical screen, not financial advice. "Expected range" is a
@@ -560,6 +702,9 @@ def build_results_json(results: List[ScreenResult], cfg: dict, duration_seconds:
             "avg_dollar_volume": r.avg_dollar_volume,
             "volume_ratio": r.volume_ratio,
             "expansion_progress": r.expansion_progress,
+            "confirmations_passed": r.confirmations_passed,
+            "confirmations_total": r.confirmations_total,
+            "indicators": r.indicators,
             "notes": r.notes,
         }
 
@@ -670,7 +815,7 @@ def main():
         # for the UI, not your inbox.
         html = build_html_report(matches, cfg)
         html_path = out_cfg.get("html_report_path", "latest_report.html")
-        with open(html_path, "w") as f:
+        with open(html_path, "w", encoding="utf-8") as f:
             f.write(html)
 
         # results.json covers both tiers -- this is what the GitHub Pages UI reads.
@@ -678,7 +823,7 @@ def main():
         logger.info(f"Run took {duration_seconds:.1f}s.")
         results_json_path = out_cfg.get("results_json_path", "docs/data/results.json")
         os.makedirs(os.path.dirname(results_json_path) or ".", exist_ok=True)
-        with open(results_json_path, "w") as f:
+        with open(results_json_path, "w", encoding="utf-8") as f:
             json.dump(build_results_json(results, cfg, duration_seconds), f, indent=2)
         logger.info(f"Wrote {results_json_path}")
 

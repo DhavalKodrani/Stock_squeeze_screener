@@ -23,9 +23,16 @@ it up if you want, and the UI still works either way.
    - **match** — contraction followed by a confirmed expansion (the strong signal).
    - **watch** — contraction happened and volume is *approaching* the expansion
      trigger but hasn't crossed it yet (`volume.near_expansion_ratio` in `config.yaml`).
-7. For every candidate, computes: current price, ATR-based expected low/high
+7. Runs a **confirmation-indicator vote** on everything that survived: RSI,
+   MACD, Momentum (rate of change), Least Squares MA, EMA, Ichimoku Cloud,
+   rolling VWAP, and Money Flow Index each cast a bullish yes/no vote, and the
+   ticker needs at least `confirmations.min_required` votes (default 5 of 8).
+   Every vote — pass or fail, with its value — is saved to `results.json` and
+   shown in the UI's "Signals" column (hover for the full breakdown). Each
+   indicator can be tuned or disabled individually in `config.yaml`.
+8. For every candidate, computes: current price, ATR-based expected low/high
    range, 52-week high, 52-week low.
-8. Writes `docs/data/results.json` (read by the GitHub Pages UI) on every run,
+9. Writes `docs/data/results.json` (read by the GitHub Pages UI) on every run,
    and — if email secrets are configured — emails an HTML report of confirmed
    matches. If secrets are missing, it just skips email and logs a note; the
    run doesn't fail.

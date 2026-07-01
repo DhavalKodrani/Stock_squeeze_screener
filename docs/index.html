@@ -122,6 +122,10 @@
   .scan-chip.scan-hit { color: #4ade80; font-weight: 700; font-size: 15.5px; }
   .scan-chip.scan-current { color: #f87171; font-weight: 700; border-color: #f87171; background: #3b1414; }
 
+  .signals { font-weight: 700; cursor: help; border-bottom: 1px dotted var(--muted); }
+  .signals.sig-all { color: #4ade80; }
+  .signals.sig-some { color: #fbbf24; }
+
   .modal-backdrop {
     display: none;
     position: fixed; inset: 0;
@@ -209,6 +213,7 @@
           <th>52-Wk High</th>
           <th>52-Wk Low</th>
           <th>Expansion Progress</th>
+          <th title="Confirmation indicators passed: RSI, MACD, Momentum, LSMA, EMA, Ichimoku, VWAP, MFI. Hover a value for the breakdown.">Signals</th>
           <th>Notes</th>
         </tr>
       </thead>
