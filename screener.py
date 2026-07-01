@@ -28,13 +28,14 @@ Environment variables required for email sending (see README.md):
 """
 
 import argparse
+import json
 import logging
 import os
 import smtplib
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import List, Optional
@@ -88,6 +89,9 @@ class ScreenResult:
     year_low: float
     bandwidth_percentile: float
     avg_dollar_volume: float
+    status: str = "watch"           # "match" (volume confirmed) or "watch" (approaching expansion)
+    volume_ratio: Optional[float] = None      # latest_volume / long_avg
+    expansion_progress: Optional[float] = None  # volume_ratio / expansion_multiplier; >=1.0 means triggered
     notes: List[str] = field(default_factory=list)
 
 
@@ -250,11 +254,23 @@ def evaluate_ticker(ticker: str, df: pd.DataFrame, cfg: dict) -> Optional[Screen
     contraction_happened = bool((recent_ratio <= vol_cfg["contraction_ratio_max"]).any())
     latest_volume = df["Volume"].iloc[-1]
     long_avg = df["vol_long"].iloc[-1]
-    expansion_now = bool(latest_volume >= long_avg * vol_cfg["expansion_multiplier"]) if not pd.isna(long_avg) else False
 
-    if vol_cfg["require_volume_confirmation"]:
-        if not (contraction_happened and expansion_now):
-            return None
+    volume_ratio = float(latest_volume / long_avg) if not pd.isna(long_avg) and long_avg > 0 else None
+    expansion_multiplier = vol_cfg["expansion_multiplier"]
+    expansion_now = bool(volume_ratio is not None and volume_ratio >= expansion_multiplier)
+    expansion_progress = round(volume_ratio / expansion_multiplier, 4) if volume_ratio is not None else None
+
+    # Classify into a tier: "match" = fully confirmed, "watch" = approaching
+    # expansion (useful for the UI even when it hasn't triggered yet), or
+    # excluded entirely if it's not even close and volume confirmation is required.
+    if contraction_happened and expansion_now:
+        status = "match"
+    elif contraction_happened and expansion_progress is not None and expansion_progress >= vol_cfg.get("near_expansion_ratio", 0.75):
+        status = "watch"
+    elif not vol_cfg["require_volume_confirmation"]:
+        status = "match"
+    else:
+        return None
 
     # --- Projection (ATR-based expected range) ---
     atr = compute_atr(df, proj_cfg["atr_period"]).iloc[-1]
@@ -267,8 +283,10 @@ def evaluate_ticker(ticker: str, df: pd.DataFrame, cfg: dict) -> Optional[Screen
     year_low = float(df["Low"].min())
 
     notes = []
-    if contraction_happened and expansion_now:
+    if status == "match":
         notes.append("Volume contracted then expanded on latest bar.")
+    elif status == "watch":
+        notes.append(f"Volume approaching expansion trigger ({expansion_progress * 100:.0f}% of the way there).")
     notes.append(f"Bollinger band-width at {percentile:.1f}th percentile of last {bb_cfg['squeeze_lookback_days']} days.")
 
     return ScreenResult(
@@ -280,6 +298,9 @@ def evaluate_ticker(ticker: str, df: pd.DataFrame, cfg: dict) -> Optional[Screen
         year_low=round(year_low, 4),
         bandwidth_percentile=round(percentile, 2),
         avg_dollar_volume=round(avg_dollar_volume, 2),
+        status=status,
+        volume_ratio=round(volume_ratio, 4) if volume_ratio is not None else None,
+        expansion_progress=expansion_progress,
         notes=notes,
     )
 
@@ -342,7 +363,7 @@ def run_screen(tickers: List[str], cfg: dict, logger: logging.Logger) -> List[Sc
 
                     result = evaluate_ticker(ticker, df, cfg)
                     if result:
-                        logger.info(f"MATCH: {ticker} @ ${result.current_price}")
+                        logger.info(f"{result.status.upper()}: {ticker} @ ${result.current_price}")
                         results.append(result)
                 except Exception as e:
                     logger.debug(f"Skipping {ticker} due to error: {e}")
@@ -413,6 +434,65 @@ def build_html_report(results: List[ScreenResult], cfg: dict) -> str:
     return html
 
 
+def build_results_json(results: List[ScreenResult], cfg: dict) -> dict:
+    """Serialize every screened candidate (match + watch tiers) for the GitHub
+    Pages UI. Sorted so the closest-to-triggering tickers come first."""
+    price_cfg = cfg["price_filter"]
+    vol_cfg = cfg["volume"]
+
+    def to_dict(r: ScreenResult) -> dict:
+        return {
+            "ticker": r.ticker,
+            "status": r.status,
+            "current_price": r.current_price,
+            "expected_low": r.expected_low,
+            "expected_high": r.expected_high,
+            "year_high": r.year_high,
+            "year_low": r.year_low,
+            "bandwidth_percentile": r.bandwidth_percentile,
+            "avg_dollar_volume": r.avg_dollar_volume,
+            "volume_ratio": r.volume_ratio,
+            "expansion_progress": r.expansion_progress,
+            "notes": r.notes,
+        }
+
+    ordered = sorted(
+        results,
+        key=lambda r: (r.expansion_progress if r.expansion_progress is not None else 0),
+        reverse=True,
+    )
+
+    return {
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "criteria": {
+            "max_price": price_cfg["max_price"],
+            "min_price": price_cfg["min_price"],
+            "expansion_multiplier": vol_cfg["expansion_multiplier"],
+            "near_expansion_ratio": vol_cfg.get("near_expansion_ratio", 0.75),
+        },
+        "counts": {
+            "match": sum(1 for r in results if r.status == "match"),
+            "watch": sum(1 for r in results if r.status == "watch"),
+        },
+        "results": [to_dict(r) for r in ordered],
+    }
+
+
+def email_configured(cfg: dict) -> bool:
+    """True only if every secret/env var needed to send mail is present.
+    Email is optional end-to-end: missing secrets are not an error, the
+    screener just relies on results.json / the GitHub Pages UI instead."""
+    e_cfg = cfg["email"]
+    required_envs = [
+        e_cfg["smtp_server_env"],
+        e_cfg["smtp_port_env"],
+        e_cfg["sender_email_env"],
+        e_cfg["sender_password_env"],
+        e_cfg["recipient_email_env"],
+    ]
+    return all(os.environ.get(name) for name in required_envs)
+
+
 def send_email(html_body: str, num_matches: int, cfg: dict, logger: logging.Logger) -> None:
     e_cfg = cfg["email"]
 
@@ -471,20 +551,37 @@ def main():
             sys.exit(1)
 
         results = run_screen(tickers, cfg, logger)
-        logger.info(f"Screening complete: {len(results)} match(es) found.")
+        matches = [r for r in results if r.status == "match"]
+        watch = [r for r in results if r.status == "watch"]
+        logger.info(f"Screening complete: {len(matches)} match(es), {len(watch)} on watch (near expansion).")
 
-        html = build_html_report(results, cfg)
+        out_cfg = cfg.get("output", {})
 
-        # Always write the report locally too, so it's visible as a build artifact
-        with open("latest_report.html", "w") as f:
+        # Email report only covers fully-confirmed matches; the watch tier is
+        # for the UI, not your inbox.
+        html = build_html_report(matches, cfg)
+        html_path = out_cfg.get("html_report_path", "latest_report.html")
+        with open(html_path, "w") as f:
             f.write(html)
 
+        # results.json covers both tiers -- this is what the GitHub Pages UI reads.
+        results_json_path = out_cfg.get("results_json_path", "docs/data/results.json")
+        os.makedirs(os.path.dirname(results_json_path) or ".", exist_ok=True)
+        with open(results_json_path, "w") as f:
+            json.dump(build_results_json(results, cfg), f, indent=2)
+        logger.info(f"Wrote {results_json_path}")
+
         if args.dry_run:
-            logger.info("Dry run: skipping email send. See latest_report.html for output.")
+            logger.info("Dry run: skipping email send.")
             return
 
-        if results or cfg["email"].get("send_email_if_no_hits", False):
-            send_email(html, len(results), cfg, logger)
+        if not email_configured(cfg):
+            logger.info(
+                "Email not configured (one or more secrets missing) -- skipping email. "
+                "results.json / the GitHub Pages UI has the data instead."
+            )
+        elif matches or cfg["email"].get("send_email_if_no_hits", False):
+            send_email(html, len(matches), cfg, logger)
         else:
             logger.info("No matches and send_email_if_no_hits is false: no email sent.")
 

@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+latest_report.html
+screener.log
+config.test.yaml
+.env
+.claude/

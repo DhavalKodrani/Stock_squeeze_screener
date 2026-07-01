@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Squeeze Screener</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #3b82f6;
+    --match: #16a34a;
+    --watch: #d97706;
+    --danger: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, Segoe UI, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .disclaimer {
+    background: #3b1d0e;
+    border: 1px solid #b45309;
+    color: #fcd34d;
+    font-size: 12.5px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+  }
+  .controls .group { display: flex; flex-direction: column; gap: 4px; min-width: 220px; }
+  .controls label { font-size: 12px; color: var(--muted); }
+  input[type=range] { width: 220px; }
+  .meta { font-size: 12px; color: var(--muted); }
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 9px 16px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: #263449;
+    color: var(--text);
+    cursor: pointer;
+  }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.link { background: none; border: none; color: var(--accent); text-decoration: underline; padding: 0; }
+  #status-line { font-size: 12.5px; color: var(--muted); min-height: 18px; margin-top: 8px; }
+  #status-line.error { color: #f87171; }
+  #status-line.ok { color: #4ade80; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; }
+  td.notes { white-space: normal; color: var(--muted); font-size: 12px; max-width: 260px; }
+  .ticker { font-weight: 700; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .badge.match { background: rgba(22,163,74,0.18); color: #4ade80; }
+  .badge.watch { background: rgba(217,119,6,0.18); color: #fbbf24; }
+  .progress-cell { display: flex; align-items: center; gap: 8px; }
+  .progress-bar { width: 80px; height: 6px; background: #334155; border-radius: 4px; overflow: hidden; }
+  .progress-bar > div { height: 100%; background: var(--watch); }
+  .progress-bar > div.done { background: var(--match); }
+  #empty-state { color: var(--muted); font-size: 13px; padding: 20px 0; text-align: center; }
+
+  .modal-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    align-items: center; justify-content: center;
+    z-index: 10;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    max-width: 460px;
+    width: 90%;
+  }
+  .modal h2 { font-size: 16px; margin-top: 0; }
+  .modal p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .modal input[type=text], .modal input[type=password] {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #0f172a;
+    color: var(--text);
+    font-family: monospace;
+    margin: 8px 0 14px 0;
+  }
+  .modal .row { display: flex; gap: 8px; justify-content: flex-end; }
+  ol { font-size: 13px; color: var(--muted); padding-left: 18px; line-height: 1.7; }
+  code { background: #0f172a; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Stock Squeeze Screener</h1>
+  <div class="subtitle">Under-$2 (configurable) volume-squeeze / early-uptrend watchlist &mdash; <span id="last-updated">no data loaded yet</span></div>
+
+  <div class="disclaimer">
+    This is an automated technical screen, not financial advice. "Expected range" is a mechanical
+    ATR-based projection, not a forecast or guarantee. Low-priced stocks are often thinly traded and
+    volatile &mdash; verify data independently before acting on anything shown here.
+  </div>
+
+  <div class="panel">
+    <div class="controls">
+      <div class="group">
+        <label for="threshold">Show tickers at least this close to their volume-expansion trigger</label>
+        <input type="range" id="threshold" min="50" max="120" value="90" step="1">
+        <span class="meta"><span id="threshold-value">90</span>% of the way there (100% = triggered now)</span>
+      </div>
+      <div class="group">
+        <label>&nbsp;</label>
+        <span class="meta"><span id="visible-count">0</span> of <span id="total-count">0</span> tickers shown</span>
+      </div>
+      <div class="group" style="margin-left:auto; align-items:flex-end;">
+        <label>&nbsp;</label>
+        <div style="display:flex; gap:8px;">
+          <button id="btn-reload" title="Re-fetch the last saved results.json, no token needed">↻ Reload saved data</button>
+          <button id="btn-refresh" class="primary">▶ Refresh Now (run new scan)</button>
+          <button id="btn-settings" title="Set or clear your GitHub token">⚙</button>
+        </div>
+      </div>
+    </div>
+    <div id="status-line"></div>
+  </div>
+
+  <div class="panel">
+    <table id="results-table">
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Status</th>
+          <th>Current Price</th>
+          <th>Expected Range (ATR)</th>
+          <th>52-Wk High</th>
+          <th>52-Wk Low</th>
+          <th>Expansion Progress</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="results-body"></tbody>
+    </table>
+    <div id="empty-state" style="display:none;">No tickers in range at the current threshold.</div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="settings-modal">
+  <div class="modal">
+    <h2>GitHub token</h2>
+    <p>
+      "Refresh Now" triggers a fresh GitHub Actions run and reads back the result, so it needs a
+      token with access to this repo. It is stored only in your browser's local storage and is never
+      committed anywhere &mdash; it's sent only to GitHub's API.
+    </p>
+    <p>Create a <strong>fine-grained</strong> personal access token:</p>
+    <ol>
+      <li>Go to <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a></li>
+      <li>Repository access &rarr; Only select repositories &rarr; this repo</li>
+      <li>Permissions &rarr; Actions: <code>Read and write</code>, Contents: <code>Read-only</code></li>
+      <li>Generate, then paste it below</li>
+    </ol>
+    <input type="password" id="token-input" placeholder="github_pat_...">
+    <div class="row">
+      <button id="btn-clear-token">Clear saved token</button>
+      <button id="btn-save-token" class="primary">Save</button>
+      <button id="btn-close-modal">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -52,6 +52,13 @@ volume:
   contraction_ratio_max: 0.85   # short_avg / long_avg <= this at some point in lookback = contraction happened
   expansion_multiplier: 1.15    # latest volume >= long_avg * this = expansion happening now
   require_volume_confirmation: true
+  # Watchlist tier: tickers that pass the squeeze/trend filters and have contracted
+  # volume, but haven't hit the expansion_multiplier trigger yet. Included in
+  # results.json (for the UI) with status "watch" as long as
+  # (latest_volume / long_avg) / expansion_multiplier >= this ratio.
+  # The UI has its own slider to filter within this band further, so keep this
+  # loose (a lower number = more candidates saved to results.json).
+  near_expansion_ratio: 0.75
 
 projection:
   # "Expected low/high range" is a heuristic technical projection based on
@@ -60,6 +67,10 @@ projection:
   atr_multiplier: 1.5
 
 email:
+  # Email is entirely optional. If any of the 5 secrets below aren't set as
+  # environment variables (e.g. you haven't added them as GitHub Actions
+  # secrets), the screener just skips sending mail and logs a note -- it will
+  # NOT fail the run. The results.json / GitHub Pages UI works either way.
   subject_prefix: "[Stock Squeeze Screener]"
   smtp_server_env: "SMTP_SERVER"        # e.g. smtp.gmail.com
   smtp_port_env: "SMTP_PORT"            # e.g. 587
@@ -67,6 +78,12 @@ email:
   sender_password_env: "EMAIL_PASSWORD" # use an app password, not your real password
   recipient_email_env: "EMAIL_RECIPIENT"
   send_email_if_no_hits: false          # if true, sends a "no matches today" email too
+
+output:
+  # Written on every run (dry-run or not) so the GitHub Pages UI always has
+  # something fresh to load, independent of whether email is configured.
+  results_json_path: "docs/data/results.json"
+  html_report_path: "latest_report.html"
 
 logging:
   level: "INFO"

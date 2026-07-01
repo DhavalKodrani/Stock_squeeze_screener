@@ -5,7 +5,10 @@ on:
     # Runs at 21:30 UTC, Mon-Fri (~5:30pm US Eastern, after market close).
     # Adjust to your timezone/preference. Cron is always in UTC.
     - cron: "30 21 * * 1-5"
-  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab
+  workflow_dispatch: {}   # lets you trigger it manually (Actions tab, or the "Refresh Now" button in the UI)
+
+permissions:
+  contents: write   # needed to commit docs/data/results.json back to the repo
 
 jobs:
   screen:
@@ -26,12 +29,28 @@ jobs:
 
       - name: Run screener
         env:
+          # Optional: if any of these aren't set as repo secrets, the screener
+          # just skips emailing and relies on docs/data/results.json / the
+          # GitHub Pages UI instead. It will not fail the run.
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
         run: python screener.py --config config.yaml
+
+      - name: Commit results.json for the GitHub Pages UI
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain docs/data/results.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add docs/data/results.json
+            git commit -m "Update results.json ($(date -u +'%Y-%m-%d %H:%M UTC'))"
+            git push
+          else
+            echo "No change to results.json, nothing to commit."
+          fi
 
       - name: Upload report + logs as build artifact
         if: always()
