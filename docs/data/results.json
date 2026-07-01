@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T19:12:16Z",
+  "generated_at": "2026-07-01T19:30:58Z",
   "criteria": {
     "max_price": 2.0,
     "min_price": 0.05,
@@ -12,20 +12,20 @@
   },
   "results": [
     {
-      "ticker": "HIT",
+      "ticker": "ABLV",
       "status": "watch",
-      "current_price": 1.0502,
-      "expected_low": 0.9231,
-      "expected_high": 1.1773,
-      "year_high": 4.02,
-      "year_low": 0.81,
-      "bandwidth_percentile": 0.83,
-      "avg_dollar_volume": 153826.84,
-      "volume_ratio": 1.0123,
-      "expansion_progress": 0.8803,
+      "current_price": 1.15,
+      "expected_low": 1.0416,
+      "expected_high": 1.2584,
+      "year_high": 1.77,
+      "year_low": 0.54,
+      "bandwidth_percentile": 5.83,
+      "avg_dollar_volume": 121990.1,
+      "volume_ratio": 1.1347,
+      "expansion_progress": 0.9867,
       "notes": [
-        "Volume approaching expansion trigger (88% of the way there).",
-        "Bollinger band-width at 0.8th percentile of last 120 days."
+        "Volume approaching expansion trigger (99% of the way there).",
+        "Bollinger band-width at 5.8th percentile of last 120 days."
       ]
     }
   ]
