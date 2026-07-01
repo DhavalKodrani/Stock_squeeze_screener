@@ -393,16 +393,19 @@ def _commit_progress_file(path: str, logger: logging.Logger) -> None:
     try:
         add = _git(["add", path], logger)
         if add.returncode != 0:
-            logger.debug(f"Progress git add failed (non-fatal): {add.stderr.strip()}")
+            logger.warning(f"PROGRESS_GIT: add failed (non-fatal): {add.stderr.strip()}")
             return
         commit = _git(["commit", "-m", "Update scan progress"], logger)
         if commit.returncode != 0:
+            logger.debug(f"PROGRESS_GIT: nothing to commit: {commit.stdout.strip()} {commit.stderr.strip()}")
             return  # most likely "nothing to commit" -- not an error
         push = _git(["push"], logger)
         if push.returncode != 0:
-            logger.debug(f"Progress push failed (non-fatal): {push.stderr.strip()}")
+            logger.warning(f"PROGRESS_GIT: push failed (non-fatal): {push.stderr.strip()}")
+        else:
+            logger.info("PROGRESS_GIT: pushed progress.json update.")
     except Exception as e:
-        logger.debug(f"Progress commit failed (non-fatal): {e}")
+        logger.warning(f"PROGRESS_GIT: commit/push raised (non-fatal): {e}")
 
 
 def run_screen(tickers: List[str], cfg: dict, logger: logging.Logger, dry_run: bool = False) -> List[ScreenResult]:
