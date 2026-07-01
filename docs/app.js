@@ -99,6 +99,74 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// --- Live scan progress (parsed from the running job's log) ---------------
+
+function parseScanLog(text) {
+  const state = new Map(); // ticker -> 'pending' | 'scanning' | 'none' | 'watch' | 'match'
+  let allTickers = [];
+  let current = null;
+
+  for (const rawLine of text.split("\n")) {
+    // GitHub Actions log lines are prefixed with an ISO-8601 timestamp, e.g.
+    // "2026-07-01T19:12:31.1234567Z SCAN_START: AAPL" -- strip it.
+    const line = rawLine.replace(/^\S+Z\s+/, "");
+    let m;
+    if ((m = line.match(/^UNIVERSE_LIST:\s*(.*)$/))) {
+      allTickers = m[1].split(",").map((s) => s.trim()).filter(Boolean);
+      allTickers.forEach((t) => state.set(t, "pending"));
+    } else if ((m = line.match(/^BATCH_DOWNLOADING:\s*(\d+)\/(\d+)/))) {
+      current = `(downloading batch ${m[1]}/${m[2]}…)`;
+    } else if ((m = line.match(/^SCAN_START:\s*(\S+)/))) {
+      state.set(m[1], "scanning");
+      current = m[1];
+    } else if ((m = line.match(/^SCAN_DONE:\s*(\S+)\s+(\S+)/))) {
+      state.set(m[1], m[2].toLowerCase());
+      if (current === m[1]) current = null;
+    }
+  }
+
+  const scanned = [...state.values()].filter((s) => s !== "pending" && s !== "scanning").length;
+  return { total: allTickers.length, allTickers, state, current, scanned };
+}
+
+function renderScanProgress(scan) {
+  if (!scan.total) return;
+  el("scan-progress-panel").style.display = "block";
+  el("scan-current-ticker").textContent = scan.current || "–";
+  el("scan-counts").textContent = `${scan.scanned} / ${scan.total} scanned`;
+
+  const grid = el("scan-ticker-grid");
+  grid.innerHTML = scan.allTickers
+    .map((t) => {
+      const s = scan.state.get(t) || "pending";
+      const cls =
+        s === "scanning" ? "scan-current" :
+        s === "watch" || s === "match" ? "scan-hit" :
+        s === "pending" ? "scan-pending" : "scan-none";
+      return `<span class="scan-chip ${cls}">${t}</span>`;
+    })
+    .join("");
+}
+
+async function fetchJobId(runId) {
+  const res = await ghApi(`/actions/runs/${runId}/jobs`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.jobs && data.jobs[0] ? data.jobs[0].id : null;
+}
+
+async function fetchAndRenderScanLog(jobId) {
+  if (!jobId) return;
+  try {
+    const res = await ghApi(`/actions/jobs/${jobId}/logs`);
+    if (!res.ok) return;
+    const text = await res.text();
+    renderScanProgress(parseScanLog(text));
+  } catch (err) {
+    // Best effort -- live progress is a nice-to-have, don't fail the whole refresh over it.
+  }
+}
+
 async function triggerRefresh() {
   const token = getToken();
   if (!token) {
@@ -149,13 +217,16 @@ async function triggerRefresh() {
     if (!run) throw new Error("Scan was triggered but didn't show up in the run list in time. Check the Actions tab.");
 
     setStatus(`Scan running (this can take a few minutes for the full ticker universe)...`);
+    let jobId = await fetchJobId(run.id);
     while (run.status !== "completed") {
       await sleep(5000);
       const runRes = await ghApi(`/actions/runs/${run.id}`);
-      if (!runRes.ok) continue;
-      run = await runRes.json();
+      if (runRes.ok) run = await runRes.json();
+      if (!jobId) jobId = await fetchJobId(run.id);
+      await fetchAndRenderScanLog(jobId);
       setStatus(`Scan ${run.status}...`);
     }
+    await fetchAndRenderScanLog(jobId); // catch the final lines
 
     if (run.conclusion !== "success") {
       setStatus(`Scan finished with status "${run.conclusion}". Check the Actions tab for logs. Loading last saved results instead.`, "error");

@@ -91,6 +91,21 @@
   .progress-bar > div.done { background: var(--match); }
   #empty-state { color: var(--muted); font-size: 13px; padding: 20px 0; text-align: center; }
 
+  .scan-chip {
+    display: inline-block;
+    padding: 2px 7px;
+    margin: 2px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 11.5px;
+    background: #0f172a;
+    border: 1px solid transparent;
+  }
+  .scan-chip.scan-pending { color: #f1f5f9; opacity: 0.55; }
+  .scan-chip.scan-none { color: #facc15; }
+  .scan-chip.scan-hit { color: #4ade80; font-weight: 700; }
+  .scan-chip.scan-current { color: #f87171; font-weight: 700; border-color: #f87171; background: #3b1414; }
+
   .modal-backdrop {
     display: none;
     position: fixed; inset: 0;
@@ -156,6 +171,15 @@
       </div>
     </div>
     <div id="status-line"></div>
+  </div>
+
+  <div class="panel" id="scan-progress-panel" style="display:none;">
+    <div class="meta" style="margin-bottom:10px; font-size:13px;">
+      Currently scanning: <strong id="scan-current-ticker" style="color:#f87171;">&ndash;</strong>
+      &nbsp;&mdash;&nbsp;
+      <span id="scan-counts">0 / 0 scanned</span>
+    </div>
+    <div id="scan-ticker-grid" style="max-height:260px; overflow-y:auto; line-height:2;"></div>
   </div>
 
   <div class="panel">

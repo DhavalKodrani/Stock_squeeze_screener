@@ -179,6 +179,11 @@ def fetch_ticker_universe(cfg: dict, logger: logging.Logger) -> List[str]:
         logger.info(f"Capping universe from {len(cleaned)} to {max_n} tickers for this run (random sample, not just A-M).")
         cleaned = sorted(random.sample(cleaned, max_n))
 
+    # Machine-parseable markers the GitHub Pages UI scrapes from the live job
+    # log (via the Actions API) to show scan progress in real time.
+    logger.info(f"UNIVERSE_TOTAL: {len(cleaned)}")
+    logger.info(f"UNIVERSE_LIST: {','.join(cleaned)}")
+
     return cleaned
 
 
@@ -372,12 +377,18 @@ def run_screen(tickers: List[str], cfg: dict, logger: logging.Logger) -> List[Sc
 
     for bi, batch in enumerate(batches, 1):
         logger.info(f"Batch {bi}/{len(batches)}: {batch[0]}...{batch[-1]} ({len(batch)} tickers)")
+        logger.info(f"BATCH_DOWNLOADING: {bi}/{len(batches)}")
         try:
             data = download_batch(batch, cfg, logger)
             if data is None:
+                for ticker in batch:
+                    logger.info(f"SCAN_START: {ticker}")
+                    logger.info(f"SCAN_DONE: {ticker} NONE")
                 continue
 
             for ticker in batch:
+                logger.info(f"SCAN_START: {ticker}")
+                status_label = "NONE"
                 try:
                     if len(batch) == 1:
                         df = data
@@ -391,11 +402,13 @@ def run_screen(tickers: List[str], cfg: dict, logger: logging.Logger) -> List[Sc
 
                     result = evaluate_ticker(ticker, df, cfg)
                     if result:
-                        logger.info(f"{result.status.upper()}: {ticker} @ ${result.current_price}")
+                        status_label = result.status.upper()
+                        logger.info(f"{status_label}: {ticker} @ ${result.current_price}")
                         results.append(result)
                 except Exception as e:
                     logger.debug(f"Skipping {ticker} due to error: {e}")
-                    continue
+                finally:
+                    logger.info(f"SCAN_DONE: {ticker} {status_label}")
         except Exception as e:
             logger.error(f"Unexpected error processing batch {bi}: {e}")
             continue
