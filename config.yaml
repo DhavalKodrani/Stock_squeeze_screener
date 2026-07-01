@@ -1,0 +1,73 @@
+# =============================================================================
+# Stock Squeeze Screener - Configuration
+# All thresholds here are adjustable without touching the Python code.
+# =============================================================================
+
+universe:
+  # Where to pull the master list of US tickers from.
+  # Primary: NASDAQ Trader's public symbol directory (free, no API key).
+  # Fallback: a local file (tickers_fallback.txt) if the primary source fails.
+  nasdaq_listed_url: "https://ftp.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
+  other_listed_url: "https://ftp.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt"
+  fallback_file: "tickers_fallback.txt"
+  # Exclude test issues, warrants, units, and other non-common-stock symbols
+  exclude_test_issues: true
+  exclude_symbols_with_chars: [".", "$", "+", "^", "="]   # typically warrants/rights/units
+  # Safety cap on how many tickers to actually download OHLCV for in one run
+  # (protects against rate limits / long run times). Set higher once you've
+  # tested the pipeline.
+  max_tickers_per_run: 4000
+
+price_filter:
+  max_price: 2.00          # "priced under $2"
+  min_price: 0.05          # filters out effectively-worthless/delisted junk
+  min_avg_dollar_volume: 100000   # liquidity floor: avg_volume * price, last 20 days
+
+data:
+  lookback_days: 260        # ~1 trading year of daily bars, needed for 52wk hi/lo
+  history_period: "1y"      # yfinance period string
+  interval: "1d"
+  batch_size: 50            # tickers per yfinance download batch
+  max_retries: 3
+  retry_backoff_seconds: 5
+
+bollinger:
+  period: 20
+  num_std: 2.0
+  # "Squeeze" = current band-width is at/near the tightest it's been recently
+  squeeze_lookback_days: 120
+  squeeze_percentile: 10    # current bandwidth must be <= this percentile of the lookback window
+
+trend:
+  fast_ma: 10
+  slow_ma: 30
+  # require price above fast MA and fast MA above slow MA to call it an "uptrend"
+  require_price_above_fast_ma: true
+  require_fast_above_slow_ma: true
+
+volume:
+  short_avg_days: 5
+  long_avg_days: 20
+  # volume must be contracting into the squeeze, then show signs of expanding again
+  contraction_ratio_max: 0.85   # short_avg / long_avg <= this at some point in lookback = contraction happened
+  expansion_multiplier: 1.15    # latest volume >= long_avg * this = expansion happening now
+  require_volume_confirmation: true
+
+projection:
+  # "Expected low/high range" is a heuristic technical projection based on
+  # Average True Range (ATR), NOT a prediction or guarantee of future price.
+  atr_period: 14
+  atr_multiplier: 1.5
+
+email:
+  subject_prefix: "[Stock Squeeze Screener]"
+  smtp_server_env: "SMTP_SERVER"        # e.g. smtp.gmail.com
+  smtp_port_env: "SMTP_PORT"            # e.g. 587
+  sender_email_env: "EMAIL_ADDRESS"
+  sender_password_env: "EMAIL_PASSWORD" # use an app password, not your real password
+  recipient_email_env: "EMAIL_RECIPIENT"
+  send_email_if_no_hits: false          # if true, sends a "no matches today" email too
+
+logging:
+  level: "INFO"
+  file: "screener.log"

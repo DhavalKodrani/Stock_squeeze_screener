@@ -1,0 +1,13 @@
+# Fallback ticker list (used only if the live NASDAQ Trader symbol directory
+# download fails, e.g. due to a network hiccup in CI).
+# Add/remove tickers as you like -- one symbol per line, '#' for comments.
+SIRI
+NOK
+SNAP
+PLUG
+FCEL
+RIOT
+MARA
+NIO
+SOFI
+CLOV

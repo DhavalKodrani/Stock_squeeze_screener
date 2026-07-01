@@ -1,0 +1,44 @@
+name: Daily Stock Squeeze Screener
+
+on:
+  schedule:
+    # Runs at 21:30 UTC, Mon-Fri (~5:30pm US Eastern, after market close).
+    # Adjust to your timezone/preference. Cron is always in UTC.
+    - cron: "30 21 * * 1-5"
+  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run screener
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+        run: python screener.py --config config.yaml
+
+      - name: Upload report + logs as build artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screener-output-${{ github.run_number }}
+          path: |
+            latest_report.html
+            screener.log
+          retention-days: 30
