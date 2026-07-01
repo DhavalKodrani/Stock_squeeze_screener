@@ -93,6 +93,19 @@ Without a token, you can still click "↻ Reload saved data" to re-check for
 whatever the last scheduled/manual run produced, or trigger a run yourself
 from the **Actions** tab ("Run workflow").
 
+While a triggered scan is running, the UI shows live per-ticker progress
+(total vs. scanned, the ticker currently being evaluated, and a color-coded
+list: dim white = not reached yet, red = currently scanning, yellow =
+scanned with no hit, green = matched or on watch). This works by having
+`screener.py` itself commit+push a small `docs/data/progress.json` file
+periodically while it scans (throttled by
+`output.progress_commit_min_interval_seconds` in `config.yaml`, default 20s)
+— GitHub Actions job logs are only readable once a job finishes, so there's
+no way to stream them live, this is the workaround. A full scan of ~4,000
+tickers produces roughly 10-25 extra "Update scan progress" commits; lower
+the frequency by raising that interval if you'd rather have a quieter git
+history.
+
 ## 5. Schedule
 
 The workflow (`.github/workflows/daily-screener.yml`) runs **weekdays at

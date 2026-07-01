@@ -10,6 +10,7 @@ const REPO_NAME = "Stock_squeeze_screener";
 const WORKFLOW_FILE = "daily-screener.yml";
 const BRANCH = "main";
 const RESULTS_PATH = "docs/data/results.json";
+const PROGRESS_PATH = "docs/data/progress.json";
 const TOKEN_KEY = "ssq_gh_token";
 
 const API_BASE = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
@@ -99,69 +100,45 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// --- Live scan progress (parsed from the running job's log) ---------------
+// --- Live scan progress ----------------------------------------------------
+// GitHub Actions job logs are only readable once a job *finishes* (the
+// live-log blob returns 404 "BlobNotFound" while a job is still running --
+// confirmed, there's no way to stream them live). So instead screener.py
+// itself commits+pushes docs/data/progress.json periodically while
+// scanning, and we poll that here via the Contents API, same mechanism as
+// results.json.
 
-function parseScanLog(text) {
-  const state = new Map(); // ticker -> 'pending' | 'scanning' | 'none' | 'watch' | 'match'
-  let allTickers = [];
-  let current = null;
-
-  for (const rawLine of text.split("\n")) {
-    // GitHub Actions log lines are prefixed with an ISO-8601 timestamp, e.g.
-    // "2026-07-01T19:12:31.1234567Z SCAN_START: AAPL" -- strip it.
-    const line = rawLine.replace(/^\S+Z\s+/, "");
-    let m;
-    if ((m = line.match(/^UNIVERSE_LIST:\s*(.*)$/))) {
-      allTickers = m[1].split(",").map((s) => s.trim()).filter(Boolean);
-      allTickers.forEach((t) => state.set(t, "pending"));
-    } else if ((m = line.match(/^BATCH_DOWNLOADING:\s*(\d+)\/(\d+)/))) {
-      current = `(downloading batch ${m[1]}/${m[2]}…)`;
-    } else if ((m = line.match(/^SCAN_START:\s*(\S+)/))) {
-      state.set(m[1], "scanning");
-      current = m[1];
-    } else if ((m = line.match(/^SCAN_DONE:\s*(\S+)\s+(\S+)/))) {
-      state.set(m[1], m[2].toLowerCase());
-      if (current === m[1]) current = null;
-    }
-  }
-
-  const scanned = [...state.values()].filter((s) => s !== "pending" && s !== "scanning").length;
-  return { total: allTickers.length, allTickers, state, current, scanned };
+async function fetchJsonViaContentsApi(path) {
+  const res = await ghApi(`/contents/${path}?ref=${BRANCH}`);
+  if (!res.ok) return null;
+  const body = await res.json();
+  const bytes = Uint8Array.from(atob(body.content.replace(/\n/g, "")), (c) => c.charCodeAt(0));
+  return JSON.parse(new TextDecoder("utf-8").decode(bytes));
 }
 
-function renderScanProgress(scan) {
-  if (!scan.total) return;
+function renderScanProgress(data) {
+  if (!data || !data.total) return;
   el("scan-progress-panel").style.display = "block";
-  el("scan-current-ticker").textContent = scan.current || "–";
-  el("scan-counts").textContent = `${scan.scanned} / ${scan.total} scanned`;
+  el("scan-current-ticker").textContent = data.current || "–";
+  el("scan-counts").textContent = `${data.scanned} / ${data.total} scanned`;
 
   const grid = el("scan-ticker-grid");
-  grid.innerHTML = scan.allTickers
-    .map((t) => {
-      const s = scan.state.get(t) || "pending";
+  grid.innerHTML = data.tickers
+    .map((t, i) => {
+      const s = data.status[i];
       const cls =
-        s === "scanning" ? "scan-current" :
+        t === data.current ? "scan-current" :
         s === "watch" || s === "match" ? "scan-hit" :
-        s === "pending" ? "scan-pending" : "scan-none";
+        s === "pending" || s === "scanning" ? "scan-pending" : "scan-none";
       return `<span class="scan-chip ${cls}">${t}</span>`;
     })
     .join("");
 }
 
-async function fetchJobId(runId) {
-  const res = await ghApi(`/actions/runs/${runId}/jobs`);
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.jobs && data.jobs[0] ? data.jobs[0].id : null;
-}
-
-async function fetchAndRenderScanLog(jobId) {
-  if (!jobId) return;
+async function fetchAndRenderProgress() {
   try {
-    const res = await ghApi(`/actions/jobs/${jobId}/logs`);
-    if (!res.ok) return;
-    const text = await res.text();
-    renderScanProgress(parseScanLog(text));
+    const data = await fetchJsonViaContentsApi(PROGRESS_PATH);
+    if (data) renderScanProgress(data);
   } catch (err) {
     // Best effort -- live progress is a nice-to-have, don't fail the whole refresh over it.
   }
@@ -217,16 +194,14 @@ async function triggerRefresh() {
     if (!run) throw new Error("Scan was triggered but didn't show up in the run list in time. Check the Actions tab.");
 
     setStatus(`Scan running (this can take a few minutes for the full ticker universe)...`);
-    let jobId = await fetchJobId(run.id);
     while (run.status !== "completed") {
-      await sleep(5000);
+      await sleep(6000);
       const runRes = await ghApi(`/actions/runs/${run.id}`);
       if (runRes.ok) run = await runRes.json();
-      if (!jobId) jobId = await fetchJobId(run.id);
-      await fetchAndRenderScanLog(jobId);
+      await fetchAndRenderProgress();
       setStatus(`Scan ${run.status}...`);
     }
-    await fetchAndRenderScanLog(jobId); // catch the final lines
+    await fetchAndRenderProgress(); // catch the final state
 
     if (run.conclusion !== "success") {
       setStatus(`Scan finished with status "${run.conclusion}". Check the Actions tab for logs. Loading last saved results instead.`, "error");
@@ -247,15 +222,12 @@ async function loadFreshResultsViaApi() {
   const token = getToken();
   if (!token) return loadSavedResults(true);
 
-  const res = await ghApi(`/contents/${RESULTS_PATH}?ref=${BRANCH}`);
-  if (!res.ok) {
+  const data = await fetchJsonViaContentsApi(RESULTS_PATH);
+  if (!data) {
     // Fall back to the static file (may lag a little behind Pages' CDN cache).
     return loadSavedResults(true);
   }
-  const body = await res.json();
-  const bytes = Uint8Array.from(atob(body.content.replace(/\n/g, "")), (c) => c.charCodeAt(0));
-  const text = new TextDecoder("utf-8").decode(bytes);
-  latestData = JSON.parse(text);
+  latestData = data;
   el("last-updated").textContent = latestData.generated_at
     ? `last updated ${new Date(latestData.generated_at).toLocaleString()}`
     : "no data yet";

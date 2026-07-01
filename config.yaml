@@ -94,6 +94,15 @@ output:
   # something fresh to load, independent of whether email is configured.
   results_json_path: "docs/data/results.json"
   html_report_path: "latest_report.html"
+  # Live scan progress for the UI's "Refresh Now" view. GitHub Actions job
+  # logs are only readable once a job *finishes* (confirmed: the live-log
+  # blob 404s while a job is still running), so there's no way to stream
+  # progress from the log. Instead the script itself commits+pushes this
+  # small file periodically while scanning, and the UI polls it via the
+  # Contents API. Only used when running inside a git repo (skipped locally
+  # with --dry-run if git isn't set up / push fails -- non-fatal either way).
+  progress_json_path: "docs/data/progress.json"
+  progress_commit_min_interval_seconds: 20
 
 logging:
   level: "INFO"

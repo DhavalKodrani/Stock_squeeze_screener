@@ -33,6 +33,7 @@ import logging
 import os
 import random
 import smtplib
+import subprocess
 import sys
 import time
 from dataclasses import dataclass, field
@@ -366,7 +367,45 @@ def download_batch(tickers: List[str], cfg: dict, logger: logging.Logger) -> dic
     return None
 
 
-def run_screen(tickers: List[str], cfg: dict, logger: logging.Logger) -> List[ScreenResult]:
+def _git(args: List[str], logger: logging.Logger) -> subprocess.CompletedProcess:
+    return subprocess.run(["git"] + args, capture_output=True, text=True)
+
+
+def _write_progress_file(path: str, total: int, ordered_tickers: List[str], state: dict, current: Optional[str]) -> None:
+    data = {
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "total": total,
+        "scanned": sum(1 for t in ordered_tickers if state.get(t) not in (None, "pending", "scanning")),
+        "current": current,
+        "tickers": ordered_tickers,
+        "status": [state.get(t, "pending") for t in ordered_tickers],
+    }
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(data, f)
+
+
+def _commit_progress_file(path: str, logger: logging.Logger) -> None:
+    """Best-effort: commit+push the progress file so the UI can poll it via
+    the Contents API while the scan is still running. Never raises -- a
+    failure here (not a git repo, no push access, network hiccup) should
+    never take down the actual screening run."""
+    try:
+        add = _git(["add", path], logger)
+        if add.returncode != 0:
+            logger.debug(f"Progress git add failed (non-fatal): {add.stderr.strip()}")
+            return
+        commit = _git(["commit", "-m", "Update scan progress"], logger)
+        if commit.returncode != 0:
+            return  # most likely "nothing to commit" -- not an error
+        push = _git(["push"], logger)
+        if push.returncode != 0:
+            logger.debug(f"Progress push failed (non-fatal): {push.stderr.strip()}")
+    except Exception as e:
+        logger.debug(f"Progress commit failed (non-fatal): {e}")
+
+
+def run_screen(tickers: List[str], cfg: dict, logger: logging.Logger, dry_run: bool = False) -> List[ScreenResult]:
     if yf is None:
         raise RuntimeError("yfinance is not installed. Run: pip install -r requirements.txt")
 
@@ -374,6 +413,23 @@ def run_screen(tickers: List[str], cfg: dict, logger: logging.Logger) -> List[Sc
     batch_size = cfg["data"]["batch_size"]
     batches = [tickers[i:i + batch_size] for i in range(0, len(tickers), batch_size)]
     logger.info(f"Screening {len(tickers)} tickers in {len(batches)} batches of up to {batch_size}.")
+
+    out_cfg = cfg.get("output", {})
+    progress_path = out_cfg.get("progress_json_path", "docs/data/progress.json")
+    commit_interval = out_cfg.get("progress_commit_min_interval_seconds", 20)
+    progress_state = {t: "pending" for t in tickers}
+    last_commit_time = [0.0]  # mutable box so the nested function can update it
+
+    def touch_progress(current_ticker: Optional[str], force_commit: bool = False) -> None:
+        _write_progress_file(progress_path, len(tickers), tickers, progress_state, current_ticker)
+        if dry_run:
+            return  # write locally for inspection, but never push during a dry run
+        now = time.time()
+        if force_commit or (now - last_commit_time[0] >= commit_interval):
+            _commit_progress_file(progress_path, logger)
+            last_commit_time[0] = now
+
+    touch_progress(None, force_commit=True)  # so the UI sees "0 scanned" immediately
 
     for bi, batch in enumerate(batches, 1):
         logger.info(f"Batch {bi}/{len(batches)}: {batch[0]}...{batch[-1]} ({len(batch)} tickers)")
@@ -384,10 +440,14 @@ def run_screen(tickers: List[str], cfg: dict, logger: logging.Logger) -> List[Sc
                 for ticker in batch:
                     logger.info(f"SCAN_START: {ticker}")
                     logger.info(f"SCAN_DONE: {ticker} NONE")
+                    progress_state[ticker] = "none"
+                    touch_progress(ticker)
                 continue
 
             for ticker in batch:
                 logger.info(f"SCAN_START: {ticker}")
+                progress_state[ticker] = "scanning"
+                touch_progress(ticker)
                 status_label = "NONE"
                 try:
                     if len(batch) == 1:
@@ -409,10 +469,13 @@ def run_screen(tickers: List[str], cfg: dict, logger: logging.Logger) -> List[Sc
                     logger.debug(f"Skipping {ticker} due to error: {e}")
                 finally:
                     logger.info(f"SCAN_DONE: {ticker} {status_label}")
+                    progress_state[ticker] = status_label.lower()
+                    touch_progress(ticker)
         except Exception as e:
             logger.error(f"Unexpected error processing batch {bi}: {e}")
             continue
 
+    touch_progress(None, force_commit=True)  # push the final 100%-scanned state
     return results
 
 
@@ -591,7 +654,7 @@ def main():
             logger.error("No tickers to screen. Exiting.")
             sys.exit(1)
 
-        results = run_screen(tickers, cfg, logger)
+        results = run_screen(tickers, cfg, logger, dry_run=args.dry_run)
         matches = [r for r in results if r.status == "match"]
         watch = [r for r in results if r.status == "watch"]
         logger.info(f"Screening complete: {len(matches)} match(es), {len(watch)} on watch (near expansion).")

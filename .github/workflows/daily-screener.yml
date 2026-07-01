@@ -27,6 +27,15 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Configure git identity
+        # Needed before "Run screener" (not just after) -- the script itself
+        # commits+pushes docs/data/progress.json periodically while scanning
+        # so the UI can show live progress, since GitHub Actions job logs are
+        # only readable once a job finishes (no way to stream them live).
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Run screener
         env:
           # Optional: if any of these aren't set as repo secrets, the screener
@@ -42,9 +51,8 @@ jobs:
       - name: Commit results.json for the GitHub Pages UI
         if: always()
         run: |
+          git pull --rebase || true   # pick up any progress.json commits screener.py pushed mid-run
           if [ -n "$(git status --porcelain docs/data/results.json)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
             git add docs/data/results.json
             git commit -m "Update results.json ($(date -u +'%Y-%m-%d %H:%M UTC'))"
             git push
