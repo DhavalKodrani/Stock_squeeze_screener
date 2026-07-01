@@ -115,6 +115,12 @@ Everything is in `config.yaml` — no code changes needed:
   of this to filter further, live, with no rerun needed)
 - `projection.atr_multiplier` — how wide the "expected range" projection is
 - `universe.max_tickers_per_run` — safety cap on how many tickers to scan per run
+  (randomly sampled each run, not just the alphabetically-first N)
+- `universe.sec_user_agent` — set this to `YourAppName your-real-email@example.com`.
+  NASDAQ Trader's symbol directory is unreachable from most cloud IP ranges
+  (confirmed on GitHub Actions runners), so the screener falls back to SEC
+  EDGAR's `company_tickers.json`, which requires a descriptive User-Agent per
+  SEC's fair-access policy
 
 ## 7. Test it locally first (recommended)
 
@@ -147,10 +153,14 @@ stock-squeeze-screener/
 
 ## Notes on reliability
 
-- Ticker universe comes from NASDAQ Trader's public symbol directory; if that
-  request fails for any reason, the script automatically falls back to
-  `tickers_fallback.txt` (edit that file to include tickers you specifically
-  want tracked, as a safety net).
+- Ticker universe is tried in order: NASDAQ Trader's public symbol directory,
+  then SEC EDGAR's `company_tickers.json`, then the local
+  `tickers_fallback.txt`. In practice NASDAQ Trader's host times out from
+  cloud IP ranges (this was confirmed on GitHub Actions runners, not just
+  some home networks), so SEC EDGAR is effectively the primary live source —
+  make sure `universe.sec_user_agent` in `config.yaml` has your real contact
+  info, since SEC requires a descriptive User-Agent and may block generic
+  ones.
 - Yahoo Finance (via `yfinance`) can rate-limit large batch requests; the
   script downloads in configurable batches (`data.batch_size`) with retries
   and backoff, and skips/logs any ticker that fails rather than crashing the
