@@ -33,6 +33,24 @@ function fmtMoney(v) {
   return v === null || v === undefined ? "&ndash;" : `$${Number(v).toFixed(4)}`;
 }
 
+function fmtDuration(seconds) {
+  if (seconds === null || seconds === undefined) return null;
+  const s = Math.round(seconds);
+  const m = Math.floor(s / 60);
+  const rem = s % 60;
+  return m > 0 ? `${m}m ${rem}s` : `${rem}s`;
+}
+
+function updateLastUpdatedLabel() {
+  if (!latestData.generated_at) {
+    el("last-updated").textContent = "no data yet";
+    return;
+  }
+  const when = new Date(latestData.generated_at).toLocaleString();
+  const dur = fmtDuration(latestData.duration_seconds);
+  el("last-updated").textContent = dur ? `last updated ${when} · took ${dur}` : `last updated ${when}`;
+}
+
 function renderTable() {
   const threshold = Number(el("threshold").value) / 100;
   const body = el("results-body");
@@ -76,9 +94,7 @@ async function loadSavedResults(bustCache) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Couldn't load results.json (HTTP ${res.status})`);
   latestData = await res.json();
-  el("last-updated").textContent = latestData.generated_at
-    ? `last updated ${new Date(latestData.generated_at).toLocaleString()}`
-    : "no data yet";
+  updateLastUpdatedLabel();
   renderTable();
 }
 
@@ -116,23 +132,52 @@ async function fetchJsonViaContentsApi(path) {
   return JSON.parse(new TextDecoder("utf-8").decode(bytes));
 }
 
+// Rebuilding all ~4000 chip DOM nodes on every poll (every few seconds) is
+// what made the grid scroll janky -- each rebuild forces the browser to
+// re-layout the whole scroll container mid-scroll. Instead we build the
+// chip nodes once per ticker list and, on later polls, only touch the
+// className of nodes whose state actually changed.
+let scanGrid = { tickers: null, nodes: [] };
+
+function ensureScanGridBuilt(tickers) {
+  const same =
+    scanGrid.tickers &&
+    scanGrid.tickers.length === tickers.length &&
+    scanGrid.tickers.every((t, i) => t === tickers[i]);
+  if (same) return;
+
+  const grid = el("scan-ticker-grid");
+  const frag = document.createDocumentFragment();
+  const nodes = new Array(tickers.length);
+  for (let i = 0; i < tickers.length; i++) {
+    const span = document.createElement("span");
+    span.className = "scan-chip scan-pending";
+    span.textContent = tickers[i];
+    nodes[i] = span;
+    frag.appendChild(span);
+  }
+  grid.innerHTML = "";
+  grid.appendChild(frag);
+  scanGrid = { tickers, nodes };
+}
+
 function renderScanProgress(data) {
   if (!data || !data.total) return;
   el("scan-progress-panel").style.display = "block";
   el("scan-current-ticker").textContent = data.current || "–";
   el("scan-counts").textContent = `${data.scanned} / ${data.total} scanned`;
 
-  const grid = el("scan-ticker-grid");
-  grid.innerHTML = data.tickers
-    .map((t, i) => {
-      const s = data.status[i];
-      const cls =
-        t === data.current ? "scan-current" :
-        s === "watch" || s === "match" ? "scan-hit" :
-        s === "pending" || s === "scanning" ? "scan-pending" : "scan-none";
-      return `<span class="scan-chip ${cls}">${t}</span>`;
-    })
-    .join("");
+  ensureScanGridBuilt(data.tickers);
+  for (let i = 0; i < data.tickers.length; i++) {
+    const s = data.status[i];
+    const cls =
+      data.tickers[i] === data.current ? "scan-current" :
+      s === "watch" || s === "match" ? "scan-hit" :
+      s === "pending" || s === "scanning" ? "scan-pending" : "scan-none";
+    const node = scanGrid.nodes[i];
+    const fullClass = "scan-chip " + cls;
+    if (node.className !== fullClass) node.className = fullClass;
+  }
 }
 
 async function fetchAndRenderProgress() {
@@ -228,9 +273,7 @@ async function loadFreshResultsViaApi() {
     return loadSavedResults(true);
   }
   latestData = data;
-  el("last-updated").textContent = latestData.generated_at
-    ? `last updated ${new Date(latestData.generated_at).toLocaleString()}`
-    : "no data yet";
+  updateLastUpdatedLabel();
   renderTable();
 }
 

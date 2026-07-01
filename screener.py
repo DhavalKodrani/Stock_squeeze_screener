@@ -541,7 +541,7 @@ def build_html_report(results: List[ScreenResult], cfg: dict) -> str:
     return html
 
 
-def build_results_json(results: List[ScreenResult], cfg: dict) -> dict:
+def build_results_json(results: List[ScreenResult], cfg: dict, duration_seconds: Optional[float] = None) -> dict:
     """Serialize every screened candidate (match + watch tiers) for the GitHub
     Pages UI. Sorted so the closest-to-triggering tickers come first."""
     price_cfg = cfg["price_filter"]
@@ -571,6 +571,7 @@ def build_results_json(results: List[ScreenResult], cfg: dict) -> dict:
 
     return {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "duration_seconds": duration_seconds,
         "criteria": {
             "max_price": price_cfg["max_price"],
             "min_price": price_cfg["min_price"],
@@ -650,6 +651,7 @@ def main():
     cfg = load_config(args.config)
     logger = setup_logging(cfg)
     logger.info("=== Stock Squeeze Screener starting ===")
+    run_start_time = time.time()
 
     try:
         tickers = fetch_ticker_universe(cfg, logger)
@@ -672,10 +674,12 @@ def main():
             f.write(html)
 
         # results.json covers both tiers -- this is what the GitHub Pages UI reads.
+        duration_seconds = round(time.time() - run_start_time, 1)
+        logger.info(f"Run took {duration_seconds:.1f}s.")
         results_json_path = out_cfg.get("results_json_path", "docs/data/results.json")
         os.makedirs(os.path.dirname(results_json_path) or ".", exist_ok=True)
         with open(results_json_path, "w") as f:
-            json.dump(build_results_json(results, cfg), f, indent=2)
+            json.dump(build_results_json(results, cfg, duration_seconds), f, indent=2)
         logger.info(f"Wrote {results_json_path}")
 
         if args.dry_run:
