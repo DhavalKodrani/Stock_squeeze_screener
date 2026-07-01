@@ -119,6 +119,13 @@ async function triggerRefresh() {
     });
     if (!dispatchRes.ok) {
       const body = await dispatchRes.text();
+      if (dispatchRes.status === 403) {
+        throw new Error(
+          `HTTP 403 from GitHub: fine-grained tokens are unreliable for triggering workflow runs, ` +
+          `even with Actions: Read and write set. Open Settings (⚙) and use a classic token ` +
+          `(github.com/settings/tokens/new) with the "repo" and "workflow" scopes checked instead.`
+        );
+      }
       throw new Error(`Couldn't start the workflow (HTTP ${dispatchRes.status}): ${body.slice(0, 200)}`);
     }
 

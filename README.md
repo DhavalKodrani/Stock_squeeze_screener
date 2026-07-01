@@ -83,10 +83,11 @@ let it trigger a **live** scan on demand, it needs a token with access to
 this repo (entered once into the page itself — stored only in your browser's
 local storage, never committed):
 
-1. Go to [github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new)
-2. **Repository access** → Only select repositories → this repo
-3. **Permissions** → Actions: `Read and write`, Contents: `Read-only`
-4. Generate, then paste it into the ⚙ settings panel on the UI page
+1. Go to [github.com/settings/tokens/new](https://github.com/settings/tokens/new)
+   (a **classic** token — fine-grained tokens are unreliable for triggering
+   workflow runs via the API even with the right permissions set)
+2. Give it a name/expiration, and check the scopes: `repo` and `workflow`
+3. Generate, then paste it into the ⚙ settings panel on the UI page
 
 Without a token, you can still click "↻ Reload saved data" to re-check for
 whatever the last scheduled/manual run produced, or trigger a run yourself

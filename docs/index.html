@@ -186,14 +186,15 @@
       token with access to this repo. It is stored only in your browser's local storage and is never
       committed anywhere &mdash; it's sent only to GitHub's API.
     </p>
-    <p>Create a <strong>fine-grained</strong> personal access token:</p>
+    <p>Create a <strong>classic</strong> personal access token (fine-grained tokens are
+      unreliable for triggering workflow runs via the API, even with the right permissions set):</p>
     <ol>
-      <li>Go to <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a></li>
-      <li>Repository access &rarr; Only select repositories &rarr; this repo</li>
-      <li>Permissions &rarr; Actions: <code>Read and write</code>, Contents: <code>Read-only</code></li>
+      <li>Go to <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener">github.com/settings/tokens/new</a></li>
+      <li>Give it a name and expiration</li>
+      <li>Check the scopes: <code>repo</code> and <code>workflow</code></li>
       <li>Generate, then paste it below</li>
     </ol>
-    <input type="password" id="token-input" placeholder="github_pat_...">
+    <input type="password" id="token-input" placeholder="ghp_...">
     <div class="row">
       <button id="btn-clear-token">Clear saved token</button>
       <button id="btn-save-token" class="primary">Save</button>
