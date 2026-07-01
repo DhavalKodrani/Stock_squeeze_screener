@@ -31,6 +31,7 @@ import argparse
 import json
 import logging
 import os
+import random
 import smtplib
 import sys
 import time
@@ -99,33 +100,60 @@ class ScreenResult:
 # Universe building
 # --------------------------------------------------------------------------- #
 
+def _fetch_from_nasdaq_trader(u: dict, logger: logging.Logger) -> List[str]:
+    nasdaq = pd.read_csv(u["nasdaq_listed_url"], sep="|")
+    other = pd.read_csv(u["other_listed_url"], sep="|")
+
+    # Drop the trailer/footer row NASDAQ appends ("File Creation Time...")
+    nasdaq = nasdaq[nasdaq["Symbol"].notna()]
+    other = other[other["ACT Symbol"].notna()] if "ACT Symbol" in other.columns else other
+
+    nasdaq_syms = nasdaq.loc[
+        nasdaq.get("Test Issue", "N") != "Y", "Symbol"
+    ].astype(str).tolist() if u.get("exclude_test_issues") else nasdaq["Symbol"].astype(str).tolist()
+
+    other_col = "ACT Symbol" if "ACT Symbol" in other.columns else "Symbol"
+    other_syms = other.loc[
+        other.get("Test Issue", "N") != "Y", other_col
+    ].astype(str).tolist() if u.get("exclude_test_issues") else other[other_col].astype(str).tolist()
+
+    tickers = list(set(nasdaq_syms + other_syms))
+    logger.info(f"Fetched {len(tickers)} raw tickers from NASDAQ Trader symbol directories.")
+    return tickers
+
+
+def _fetch_from_sec(u: dict, logger: logging.Logger) -> List[str]:
+    url = u["sec_company_tickers_url"]
+    headers = {"User-Agent": u.get("sec_user_agent", "StockSqueezeScreener contact@example.com")}
+    resp = requests.get(url, headers=headers, timeout=20)
+    resp.raise_for_status()
+    data = resp.json()
+    tickers = [entry["ticker"] for entry in data.values() if entry.get("ticker")]
+    logger.info(f"Fetched {len(tickers)} raw tickers from SEC company_tickers.json.")
+    return tickers
+
+
 def fetch_ticker_universe(cfg: dict, logger: logging.Logger) -> List[str]:
-    """Download the full NASDAQ + other-listed symbol directories.
-    Falls back to a local file if the download fails for any reason."""
+    """Download the full ticker universe, trying multiple sources in order
+    since NASDAQ Trader's host is unreachable from many cloud IP ranges
+    (confirmed on GitHub Actions runners, not just some home networks).
+    Falls back to a local file if every live source fails."""
     tickers: List[str] = []
     u = cfg["universe"]
 
-    try:
-        nasdaq = pd.read_csv(u["nasdaq_listed_url"], sep="|")
-        other = pd.read_csv(u["other_listed_url"], sep="|")
+    for name, fetcher in [
+        ("NASDAQ Trader", lambda: _fetch_from_nasdaq_trader(u, logger)),
+        ("SEC EDGAR", lambda: _fetch_from_sec(u, logger)),
+    ]:
+        try:
+            tickers = fetcher()
+            if tickers:
+                break
+        except Exception as e:
+            logger.warning(f"Failed to fetch ticker universe from {name} ({e}). Trying next source.")
 
-        # Drop the trailer/footer row NASDAQ appends ("File Creation Time...")
-        nasdaq = nasdaq[nasdaq["Symbol"].notna()]
-        other = other[other["ACT Symbol"].notna()] if "ACT Symbol" in other.columns else other
-
-        nasdaq_syms = nasdaq.loc[
-            nasdaq.get("Test Issue", "N") != "Y", "Symbol"
-        ].astype(str).tolist() if u.get("exclude_test_issues") else nasdaq["Symbol"].astype(str).tolist()
-
-        other_col = "ACT Symbol" if "ACT Symbol" in other.columns else "Symbol"
-        other_syms = other.loc[
-            other.get("Test Issue", "N") != "Y", other_col
-        ].astype(str).tolist() if u.get("exclude_test_issues") else other[other_col].astype(str).tolist()
-
-        tickers = list(set(nasdaq_syms + other_syms))
-        logger.info(f"Fetched {len(tickers)} raw tickers from NASDAQ Trader symbol directories.")
-    except Exception as e:
-        logger.warning(f"Failed to fetch live ticker universe ({e}). Falling back to local file.")
+    if not tickers:
+        logger.warning("All live ticker sources failed. Falling back to local file.")
         fallback_path = u.get("fallback_file", "tickers_fallback.txt")
         try:
             with open(fallback_path) as f:
@@ -148,8 +176,8 @@ def fetch_ticker_universe(cfg: dict, logger: logging.Logger) -> List[str]:
     cleaned = sorted(set(cleaned))
     max_n = u.get("max_tickers_per_run")
     if max_n and len(cleaned) > max_n:
-        logger.info(f"Capping universe from {len(cleaned)} to {max_n} tickers for this run.")
-        cleaned = cleaned[:max_n]
+        logger.info(f"Capping universe from {len(cleaned)} to {max_n} tickers for this run (random sample, not just A-M).")
+        cleaned = sorted(random.sample(cleaned, max_n))
 
     return cleaned
 
