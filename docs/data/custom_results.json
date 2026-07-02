@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-02T06:26:27Z",
-  "duration_seconds": 2.4,
+  "generated_at": "2026-07-02T06:31:03Z",
+  "duration_seconds": 3.0,
   "mode": "custom",
   "criteria": {
     "max_price": 2.0,
@@ -9,268 +9,528 @@
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 1,
+    "match": 0,
     "watch": 0,
-    "none": 3
+    "none": 8
   },
   "results": [
     {
-      "ticker": "MBOT",
-      "status": "match",
-      "current_price": 1.91,
-      "expected_low": 1.7836,
-      "expected_high": 2.0364,
-      "year_high": 4.67,
-      "year_low": 1.6,
-      "bandwidth_percentile": 8.33,
-      "avg_dollar_volume": 1752864.27,
-      "volume_ratio": 1.879,
-      "expansion_progress": 1.6339,
+      "ticker": "SURG",
+      "status": "none",
+      "current_price": 0.415,
+      "expected_low": 0.347,
+      "expected_high": 0.483,
+      "year_high": 3.45,
+      "year_low": 0.339,
+      "bandwidth_percentile": 72.5,
+      "avg_dollar_volume": 1286809.15,
+      "volume_ratio": 18.5937,
+      "expansion_progress": 16.1684,
+      "confirmations_passed": 2,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": false,
+          "value": 44.19,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 0.0005,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": false,
+          "value": -5.68,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": false,
+          "value": 0.343,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": false,
+          "value": 0.4309,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 0.705,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": 0.4076,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": false,
+          "value": 97.21,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "notes": [
+        "No squeeze: band-width at 72.5th percentile (need <= 10).",
+        "10-day MA below 30-day MA (no uptrend).",
+        "Only 2/8 indicator confirmations (need 5).",
+        "Bollinger band-width at 72.5th percentile of last 120 days.",
+        "Indicator confirmations: 2/8 passed. Failed: RSI, MOMENTUM, LSMA, EMA, ICHIMOKU, MFI."
+      ]
+    },
+    {
+      "ticker": "DVLT",
+      "status": "none",
+      "current_price": 0.4,
+      "expected_low": 0.3486,
+      "expected_high": 0.4514,
+      "year_high": 4.1,
+      "year_low": 0.25,
+      "bandwidth_percentile": 45.0,
+      "avg_dollar_volume": 11542418.17,
+      "volume_ratio": 3.6408,
+      "expansion_progress": 3.1659,
+      "confirmations_passed": 4,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": false,
+          "value": 47.19,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 0.0054,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 2.56,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": false,
+          "value": 0.3259,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": 0.3975,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 0.695,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": false,
+          "value": 0.4021,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": true,
+          "value": 58.18,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "notes": [
+        "No squeeze: band-width at 45.0th percentile (need <= 10).",
+        "10-day MA below 30-day MA (no uptrend).",
+        "Only 4/8 indicator confirmations (need 5).",
+        "Bollinger band-width at 45.0th percentile of last 120 days.",
+        "Indicator confirmations: 4/8 passed. Failed: RSI, LSMA, ICHIMOKU, VWAP."
+      ]
+    },
+    {
+      "ticker": "IREN",
+      "status": "none",
+      "current_price": 43.32,
+      "expected_low": 36.7535,
+      "expected_high": 49.8865,
+      "year_high": 76.87,
+      "year_low": 14.61,
+      "bandwidth_percentile": 69.17,
+      "avg_dollar_volume": 1824579255.35,
+      "volume_ratio": 0.9896,
+      "expansion_progress": 0.8605,
+      "confirmations_passed": 0,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": false,
+          "value": 34.76,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": false,
+          "value": -1.8051,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": false,
+          "value": -26.8,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": false,
+          "value": 46.766,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": false,
+          "value": 52.8117,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 53.5,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": false,
+          "value": 55.2947,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": false,
+          "value": 34.26,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "notes": [
+        "Price $43.32 outside $0.05-$2.00 filter.",
+        "No squeeze: band-width at 69.2th percentile (need <= 10).",
+        "Price below 10-day MA (no uptrend).",
+        "10-day MA below 30-day MA (no uptrend).",
+        "Only 0/8 indicator confirmations (need 5).",
+        "Bollinger band-width at 69.2th percentile of last 120 days.",
+        "Indicator confirmations: 0/8 passed. Failed: RSI, MACD, MOMENTUM, LSMA, EMA, ICHIMOKU, VWAP, MFI."
+      ]
+    },
+    {
+      "ticker": "APLD",
+      "status": "none",
+      "current_price": 35.52,
+      "expected_low": 30.0021,
+      "expected_high": 41.0379,
+      "year_high": 50.725,
+      "year_low": 9.02,
+      "bandwidth_percentile": 27.5,
+      "avg_dollar_volume": 748209273.64,
+      "volume_ratio": 0.883,
+      "expansion_progress": 0.7678,
+      "confirmations_passed": 0,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": false,
+          "value": 36.19,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": false,
+          "value": -1.1875,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": false,
+          "value": -23.23,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": false,
+          "value": 39.1397,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": false,
+          "value": 41.538,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 40.7665,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": false,
+          "value": 42.1757,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": false,
+          "value": 34.42,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "notes": [
+        "Price $35.52 outside $0.05-$2.00 filter.",
+        "No squeeze: band-width at 27.5th percentile (need <= 10).",
+        "Price below 10-day MA (no uptrend).",
+        "10-day MA below 30-day MA (no uptrend).",
+        "Only 0/8 indicator confirmations (need 5).",
+        "Bollinger band-width at 27.5th percentile of last 120 days.",
+        "Indicator confirmations: 0/8 passed. Failed: RSI, MACD, MOMENTUM, LSMA, EMA, ICHIMOKU, VWAP, MFI."
+      ]
+    },
+    {
+      "ticker": "BYND",
+      "status": "none",
+      "current_price": 0.745,
+      "expected_low": 0.6705,
+      "expected_high": 0.8195,
+      "year_high": 7.69,
+      "year_low": 0.5,
+      "bandwidth_percentile": 4.17,
+      "avg_dollar_volume": 27004123.2,
+      "volume_ratio": 0.8167,
+      "expansion_progress": 0.7102,
       "confirmations_passed": 6,
       "confirmations_total": 8,
       "indicators": {
         "rsi": {
           "pass": true,
-          "value": 52.49,
+          "value": 52.42,
           "desc": "RSI in bullish-but-not-overbought band"
         },
         "macd": {
           "pass": true,
-          "value": 0.0201,
+          "value": 0.0093,
           "desc": "MACD line above signal line"
         },
         "momentum": {
           "pass": true,
-          "value": 4.95,
+          "value": 8.92,
           "desc": "N-day rate of change positive (%)"
         },
         "lsma": {
           "pass": false,
-          "value": 1.8214,
+          "value": 0.6767,
           "desc": "Price above rising least-squares MA"
         },
         "ema": {
           "pass": true,
-          "value": 1.8636,
+          "value": 0.7203,
           "desc": "Price above EMA"
         },
         "ichimoku": {
           "pass": false,
-          "value": 2.26,
+          "value": 0.9865,
           "desc": "Price above the Ichimoku cloud"
         },
         "vwap": {
           "pass": true,
-          "value": 1.8629,
+          "value": 0.7137,
           "desc": "Price above rolling VWAP"
         },
         "mfi": {
           "pass": true,
-          "value": 63.82,
+          "value": 62.85,
           "desc": "Money Flow Index in bullish band"
         }
       },
       "notes": [
-        "Volume contracted then expanded on latest bar.",
-        "Bollinger band-width at 8.3th percentile of last 120 days.",
+        "10-day MA below 30-day MA (no uptrend).",
+        "Volume not near expansion trigger (71% of the way).",
+        "Bollinger band-width at 4.2th percentile of last 120 days.",
         "Indicator confirmations: 6/8 passed. Failed: LSMA, ICHIMOKU."
       ]
     },
     {
-      "ticker": "PLUG",
+      "ticker": "GOSS",
       "status": "none",
-      "current_price": 2.64,
-      "expected_low": 2.3636,
-      "expected_high": 2.9164,
-      "year_high": 4.58,
-      "year_low": 1.35,
-      "bandwidth_percentile": 83.33,
-      "avg_dollar_volume": 148107767.89,
-      "volume_ratio": 0.8804,
-      "expansion_progress": 0.7655,
-      "confirmations_passed": 0,
+      "current_price": 0.168,
+      "expected_low": 0.1391,
+      "expected_high": 0.1969,
+      "year_high": 3.87,
+      "year_low": 0.14,
+      "bandwidth_percentile": 0.83,
+      "avg_dollar_volume": 2801566.28,
+      "volume_ratio": 0.7008,
+      "expansion_progress": 0.6093,
+      "confirmations_passed": 3,
       "confirmations_total": 8,
       "indicators": {
         "rsi": {
           "pass": false,
-          "value": 38.74,
+          "value": 38.84,
           "desc": "RSI in bullish-but-not-overbought band"
         },
         "macd": {
-          "pass": false,
-          "value": -0.0135,
+          "pass": true,
+          "value": 0.0067,
           "desc": "MACD line above signal line"
         },
         "momentum": {
           "pass": false,
-          "value": -2.58,
+          "value": 0.0,
           "desc": "N-day rate of change positive (%)"
         },
         "lsma": {
           "pass": false,
-          "value": 2.2737,
+          "value": 0.1532,
           "desc": "Price above rising least-squares MA"
         },
         "ema": {
           "pass": false,
-          "value": 2.8812,
+          "value": 0.1812,
           "desc": "Price above EMA"
         },
         "ichimoku": {
           "pass": false,
-          "value": 3.5375,
+          "value": 0.3415,
           "desc": "Price above the Ichimoku cloud"
         },
         "vwap": {
-          "pass": false,
-          "value": 2.903,
+          "pass": true,
+          "value": 0.1679,
           "desc": "Price above rolling VWAP"
         },
         "mfi": {
-          "pass": false,
-          "value": 39.05,
+          "pass": true,
+          "value": 61.81,
           "desc": "Money Flow Index in bullish band"
         }
       },
       "notes": [
-        "Price $2.64 outside $0.05-$2.00 filter.",
-        "No squeeze: band-width at 83.3th percentile (need <= 10).",
-        "Price below 10-day MA (no uptrend).",
         "10-day MA below 30-day MA (no uptrend).",
-        "Only 0/8 indicator confirmations (need 5).",
-        "Bollinger band-width at 83.3th percentile of last 120 days.",
-        "Indicator confirmations: 0/8 passed. Failed: RSI, MACD, MOMENTUM, LSMA, EMA, ICHIMOKU, VWAP, MFI."
+        "Volume not near expansion trigger (61% of the way).",
+        "Only 3/8 indicator confirmations (need 5).",
+        "Bollinger band-width at 0.8th percentile of last 120 days.",
+        "Indicator confirmations: 3/8 passed. Failed: RSI, MOMENTUM, LSMA, EMA, ICHIMOKU."
       ]
     },
     {
-      "ticker": "TSLA",
+      "ticker": "VLN",
       "status": "none",
-      "current_price": 425.3,
-      "expected_low": 399.3179,
-      "expected_high": 451.2821,
-      "year_high": 498.83,
-      "year_low": 288.77,
-      "bandwidth_percentile": 51.67,
-      "avg_dollar_volume": 20408766315.72,
-      "volume_ratio": 0.8329,
-      "expansion_progress": 0.7242,
-      "confirmations_passed": 7,
+      "current_price": 2.23,
+      "expected_low": 1.9248,
+      "expected_high": 2.5353,
+      "year_high": 3.71,
+      "year_low": 1.1,
+      "bandwidth_percentile": 59.17,
+      "avg_dollar_volume": 7368288.01,
+      "volume_ratio": 0.4165,
+      "expansion_progress": 0.3622,
+      "confirmations_passed": 1,
       "confirmations_total": 8,
       "indicators": {
         "rsi": {
-          "pass": true,
-          "value": 58.23,
+          "pass": false,
+          "value": 46.24,
           "desc": "RSI in bullish-but-not-overbought band"
         },
         "macd": {
-          "pass": true,
-          "value": 2.7484,
+          "pass": false,
+          "value": -0.015,
           "desc": "MACD line above signal line"
         },
         "momentum": {
-          "pass": true,
-          "value": 5.1,
+          "pass": false,
+          "value": -5.11,
           "desc": "N-day rate of change positive (%)"
         },
         "lsma": {
           "pass": false,
-          "value": 389.9046,
+          "value": 1.8411,
           "desc": "Price above rising least-squares MA"
         },
         "ema": {
-          "pass": true,
-          "value": 403.4706,
+          "pass": false,
+          "value": 2.3303,
           "desc": "Price above EMA"
         },
         "ichimoku": {
-          "pass": true,
-          "value": 416.1125,
+          "pass": false,
+          "value": 2.7245,
           "desc": "Price above the Ichimoku cloud"
         },
         "vwap": {
-          "pass": true,
-          "value": 400.2202,
+          "pass": false,
+          "value": 2.3213,
           "desc": "Price above rolling VWAP"
         },
         "mfi": {
           "pass": true,
-          "value": 61.16,
+          "value": 64.92,
           "desc": "Money Flow Index in bullish band"
         }
       },
       "notes": [
-        "Price $425.30 outside $0.05-$2.00 filter.",
-        "No squeeze: band-width at 51.7th percentile (need <= 10).",
+        "Price $2.23 outside $0.05-$2.00 filter.",
+        "No squeeze: band-width at 59.2th percentile (need <= 10).",
         "10-day MA below 30-day MA (no uptrend).",
-        "Volume not near expansion trigger (72% of the way).",
-        "Bollinger band-width at 51.7th percentile of last 120 days.",
-        "Indicator confirmations: 7/8 passed. Failed: LSMA."
+        "Volume not near expansion trigger (36% of the way).",
+        "Only 1/8 indicator confirmations (need 5).",
+        "Bollinger band-width at 59.2th percentile of last 120 days.",
+        "Indicator confirmations: 1/8 passed. Failed: RSI, MACD, MOMENTUM, LSMA, EMA, ICHIMOKU, VWAP."
       ]
     },
     {
-      "ticker": "SNDL",
+      "ticker": "DFNS",
       "status": "none",
-      "current_price": 1.37,
-      "expected_low": 1.2861,
-      "expected_high": 1.4539,
-      "year_high": 2.89,
-      "year_low": 1.22,
-      "bandwidth_percentile": 33.33,
-      "avg_dollar_volume": 3227404.91,
-      "volume_ratio": 0.6956,
-      "expansion_progress": 0.6049,
-      "confirmations_passed": 0,
+      "current_price": 0.158,
+      "expected_low": 0.111,
+      "expected_high": 0.205,
+      "year_high": 15.59,
+      "year_low": 0.158,
+      "bandwidth_percentile": 84.17,
+      "avg_dollar_volume": 3773153.14,
+      "volume_ratio": 0.1704,
+      "expansion_progress": 0.1481,
+      "confirmations_passed": 1,
       "confirmations_total": 8,
       "indicators": {
         "rsi": {
           "pass": false,
-          "value": 43.47,
+          "value": 25.68,
           "desc": "RSI in bullish-but-not-overbought band"
         },
         "macd": {
-          "pass": false,
-          "value": -0.007,
+          "pass": true,
+          "value": 0.0038,
           "desc": "MACD line above signal line"
         },
         "momentum": {
           "pass": false,
-          "value": -4.2,
+          "value": -26.51,
           "desc": "N-day rate of change positive (%)"
         },
         "lsma": {
           "pass": false,
-          "value": 1.3711,
+          "value": 0.1275,
           "desc": "Price above rising least-squares MA"
         },
         "ema": {
           "pass": false,
-          "value": 1.4047,
+          "value": 0.2357,
           "desc": "Price above EMA"
         },
         "ichimoku": {
           "pass": false,
-          "value": 1.55,
+          "value": 0.816,
           "desc": "Price above the Ichimoku cloud"
         },
         "vwap": {
           "pass": false,
-          "value": 1.4198,
+          "value": 0.2571,
           "desc": "Price above rolling VWAP"
         },
         "mfi": {
           "pass": false,
-          "value": 40.62,
+          "value": 89.36,
           "desc": "Money Flow Index in bullish band"
         }
       },
       "notes": [
-        "No squeeze: band-width at 33.3th percentile (need <= 10).",
+        "No squeeze: band-width at 84.2th percentile (need <= 10).",
         "Price below 10-day MA (no uptrend).",
         "10-day MA below 30-day MA (no uptrend).",
-        "Volume not near expansion trigger (60% of the way).",
-        "Only 0/8 indicator confirmations (need 5).",
-        "Bollinger band-width at 33.3th percentile of last 120 days.",
-        "Indicator confirmations: 0/8 passed. Failed: RSI, MACD, MOMENTUM, LSMA, EMA, ICHIMOKU, VWAP, MFI."
+        "Volume not near expansion trigger (15% of the way).",
+        "Only 1/8 indicator confirmations (need 5).",
+        "Bollinger band-width at 84.2th percentile of last 120 days.",
+        "Indicator confirmations: 1/8 passed. Failed: RSI, MOMENTUM, LSMA, EMA, ICHIMOKU, VWAP, MFI."
       ]
     }
   ]
