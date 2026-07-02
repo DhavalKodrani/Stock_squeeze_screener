@@ -136,6 +136,10 @@ output:
   # something fresh to load, independent of whether email is configured.
   results_json_path: "docs/data/results.json"
   html_report_path: "latest_report.html"
+  # On-demand custom ticker-list analyses (the UI's "Analyze My List" box /
+  # --tickers CLI flag) write here so the daily full-scan results.json is
+  # never overwritten by a custom run.
+  custom_results_json_path: "docs/data/custom_results.json"
   # Live scan progress for the UI's "Refresh Now" view. GitHub Actions job
   # logs are only readable once a job *finishes* (confirmed: the live-log
   # blob 404s while a job is still running), so there's no way to stream

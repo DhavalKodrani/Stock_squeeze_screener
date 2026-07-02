@@ -5,7 +5,12 @@ on:
     # Runs at 21:30 UTC, Mon-Fri (~5:30pm US Eastern, after market close).
     # Adjust to your timezone/preference. Cron is always in UTC.
     - cron: "30 21 * * 1-5"
-  workflow_dispatch: {}   # lets you trigger it manually (Actions tab, or the "Refresh Now" button in the UI)
+  workflow_dispatch:      # manual trigger (Actions tab, or the UI's "Refresh Now" / "Analyze My List" buttons)
+    inputs:
+      tickers:
+        description: "Optional comma-separated tickers for a custom analysis (e.g. AAPL,TSLA,PLUG). Leave empty for the full-universe scan."
+        required: false
+        default: ""
 
 permissions:
   contents: write   # needed to commit docs/data/results.json back to the repo
@@ -46,18 +51,24 @@ jobs:
           EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
-        run: python screener.py --config config.yaml
+          CUSTOM_TICKERS: ${{ github.event.inputs.tickers }}
+        run: |
+          if [ -n "$CUSTOM_TICKERS" ]; then
+            python screener.py --config config.yaml --tickers "$CUSTOM_TICKERS"
+          else
+            python screener.py --config config.yaml
+          fi
 
-      - name: Commit results.json for the GitHub Pages UI
+      - name: Commit results for the GitHub Pages UI
         if: always()
         run: |
           git pull --rebase || true   # pick up any progress.json commits screener.py pushed mid-run
-          if [ -n "$(git status --porcelain docs/data/results.json)" ]; then
-            git add docs/data/results.json
-            git commit -m "Update results.json ($(date -u +'%Y-%m-%d %H:%M UTC'))"
+          if [ -n "$(git status --porcelain docs/data/results.json docs/data/custom_results.json)" ]; then
+            git add docs/data/results.json docs/data/custom_results.json
+            git commit -m "Update results ($(date -u +'%Y-%m-%d %H:%M UTC'))"
             git push
           else
-            echo "No change to results.json, nothing to commit."
+            echo "No change to results files, nothing to commit."
           fi
 
       - name: Upload report + logs as build artifact

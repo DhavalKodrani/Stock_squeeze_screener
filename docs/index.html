@@ -85,6 +85,7 @@
   }
   .badge.match { background: rgba(22,163,74,0.18); color: #4ade80; }
   .badge.watch { background: rgba(217,119,6,0.18); color: #fbbf24; }
+  .badge.none { background: rgba(148,163,184,0.15); color: #94a3b8; }
   .progress-cell { display: flex; align-items: center; gap: 8px; }
   .progress-bar { width: 80px; height: 6px; background: #334155; border-radius: 4px; overflow: hidden; }
   .progress-bar > div { height: 100%; background: var(--watch); }
@@ -191,6 +192,23 @@
       </div>
     </div>
     <div id="status-line"></div>
+  </div>
+
+  <div class="panel">
+    <div class="controls">
+      <div class="group" style="flex:1; min-width:320px;">
+        <label for="custom-tickers">Analyze specific tickers (comma-separated) &mdash; every ticker gets the full analysis, including why it does/doesn't qualify</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="custom-tickers" placeholder="e.g. MBOT, PLUG, SNDL, TSLA"
+                 style="flex:1; padding:9px 12px; border-radius:7px; border:1px solid var(--border); background:#0f172a; color:var(--text); font-family:monospace; font-size:13px;">
+          <button id="btn-analyze" class="primary">🔎 Analyze My List</button>
+        </div>
+      </div>
+    </div>
+    <div id="custom-banner" style="display:none; margin-top:10px; font-size:13px; color:#fbbf24;">
+      Showing custom analysis of <span id="custom-count">0</span> ticker(s)
+      &mdash; <button class="link" id="btn-back-full">back to full scan results</button>
+    </div>
   </div>
 
   <div class="panel" id="scan-progress-panel" style="display:none;">
