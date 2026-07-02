@@ -1,1 +1,277 @@
-{"generated_at": null, "duration_seconds": null, "mode": "custom", "criteria": {}, "counts": {"match": 0, "watch": 0, "none": 0}, "results": []}
+{
+  "generated_at": "2026-07-02T06:26:27Z",
+  "duration_seconds": 2.4,
+  "mode": "custom",
+  "criteria": {
+    "max_price": 2.0,
+    "min_price": 0.05,
+    "expansion_multiplier": 1.15,
+    "near_expansion_ratio": 0.75
+  },
+  "counts": {
+    "match": 1,
+    "watch": 0,
+    "none": 3
+  },
+  "results": [
+    {
+      "ticker": "MBOT",
+      "status": "match",
+      "current_price": 1.91,
+      "expected_low": 1.7836,
+      "expected_high": 2.0364,
+      "year_high": 4.67,
+      "year_low": 1.6,
+      "bandwidth_percentile": 8.33,
+      "avg_dollar_volume": 1752864.27,
+      "volume_ratio": 1.879,
+      "expansion_progress": 1.6339,
+      "confirmations_passed": 6,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": true,
+          "value": 52.49,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 0.0201,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 4.95,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": false,
+          "value": 1.8214,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": 1.8636,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 2.26,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": 1.8629,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": true,
+          "value": 63.82,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "notes": [
+        "Volume contracted then expanded on latest bar.",
+        "Bollinger band-width at 8.3th percentile of last 120 days.",
+        "Indicator confirmations: 6/8 passed. Failed: LSMA, ICHIMOKU."
+      ]
+    },
+    {
+      "ticker": "PLUG",
+      "status": "none",
+      "current_price": 2.64,
+      "expected_low": 2.3636,
+      "expected_high": 2.9164,
+      "year_high": 4.58,
+      "year_low": 1.35,
+      "bandwidth_percentile": 83.33,
+      "avg_dollar_volume": 148107767.89,
+      "volume_ratio": 0.8804,
+      "expansion_progress": 0.7655,
+      "confirmations_passed": 0,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": false,
+          "value": 38.74,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": false,
+          "value": -0.0135,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": false,
+          "value": -2.58,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": false,
+          "value": 2.2737,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": false,
+          "value": 2.8812,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 3.5375,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": false,
+          "value": 2.903,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": false,
+          "value": 39.05,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "notes": [
+        "Price $2.64 outside $0.05-$2.00 filter.",
+        "No squeeze: band-width at 83.3th percentile (need <= 10).",
+        "Price below 10-day MA (no uptrend).",
+        "10-day MA below 30-day MA (no uptrend).",
+        "Only 0/8 indicator confirmations (need 5).",
+        "Bollinger band-width at 83.3th percentile of last 120 days.",
+        "Indicator confirmations: 0/8 passed. Failed: RSI, MACD, MOMENTUM, LSMA, EMA, ICHIMOKU, VWAP, MFI."
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "status": "none",
+      "current_price": 425.3,
+      "expected_low": 399.3179,
+      "expected_high": 451.2821,
+      "year_high": 498.83,
+      "year_low": 288.77,
+      "bandwidth_percentile": 51.67,
+      "avg_dollar_volume": 20408766315.72,
+      "volume_ratio": 0.8329,
+      "expansion_progress": 0.7242,
+      "confirmations_passed": 7,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": true,
+          "value": 58.23,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 2.7484,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 5.1,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": false,
+          "value": 389.9046,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": 403.4706,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": true,
+          "value": 416.1125,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": 400.2202,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": true,
+          "value": 61.16,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "notes": [
+        "Price $425.30 outside $0.05-$2.00 filter.",
+        "No squeeze: band-width at 51.7th percentile (need <= 10).",
+        "10-day MA below 30-day MA (no uptrend).",
+        "Volume not near expansion trigger (72% of the way).",
+        "Bollinger band-width at 51.7th percentile of last 120 days.",
+        "Indicator confirmations: 7/8 passed. Failed: LSMA."
+      ]
+    },
+    {
+      "ticker": "SNDL",
+      "status": "none",
+      "current_price": 1.37,
+      "expected_low": 1.2861,
+      "expected_high": 1.4539,
+      "year_high": 2.89,
+      "year_low": 1.22,
+      "bandwidth_percentile": 33.33,
+      "avg_dollar_volume": 3227404.91,
+      "volume_ratio": 0.6956,
+      "expansion_progress": 0.6049,
+      "confirmations_passed": 0,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": false,
+          "value": 43.47,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": false,
+          "value": -0.007,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": false,
+          "value": -4.2,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": false,
+          "value": 1.3711,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": false,
+          "value": 1.4047,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 1.55,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": false,
+          "value": 1.4198,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": false,
+          "value": 40.62,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "notes": [
+        "No squeeze: band-width at 33.3th percentile (need <= 10).",
+        "Price below 10-day MA (no uptrend).",
+        "10-day MA below 30-day MA (no uptrend).",
+        "Volume not near expansion trigger (60% of the way).",
+        "Only 0/8 indicator confirmations (need 5).",
+        "Bollinger band-width at 33.3th percentile of last 120 days.",
+        "Indicator confirmations: 0/8 passed. Failed: RSI, MACD, MOMENTUM, LSMA, EMA, ICHIMOKU, VWAP, MFI."
+      ]
+    }
+  ]
+}
