@@ -134,27 +134,33 @@ function renderTable() {
 
     const badgeLabel = r.status === "match" ? "TRIGGERED" : r.status === "watch" ? "WATCH" : "NO SETUP";
 
-    let dividendHtml = "&ndash;";
-    if (r.dividend_ttm != null) {
-      dividendHtml = r.dividend_yield != null
-        ? `${r.dividend_yield.toFixed(2)}%<br><span style="font-size:11px;color:var(--muted);">$${r.dividend_ttm.toFixed(4)}/yr</span>`
-        : `$${r.dividend_ttm.toFixed(4)}/yr`;
-    }
-
-    let earningsHtml = "&ndash;";
+    // Merged Dividend + Earnings cell: one line each, "–" only if neither exists.
+    const divLine = r.dividend_ttm != null
+      ? (r.dividend_yield != null
+          ? `${r.dividend_yield.toFixed(2)}% <span style="color:var(--muted);">($${r.dividend_ttm.toFixed(2)}/yr)</span>`
+          : `$${r.dividend_ttm.toFixed(2)}/yr`)
+      : null;
+    let erLine = null;
     if (r.next_earnings_date != null) {
       const near = r.earnings_in_days != null && r.earnings_in_days <= 14;
-      earningsHtml = `<span class="${near ? "earnings-near" : ""}">${r.next_earnings_date}</span><br>` +
-        `<span style="font-size:11px;color:${near ? "#fbbf24" : "var(--muted)"};">in ${r.earnings_in_days}d${near ? " ⚠" : ""}</span>`;
+      erLine = `<span class="${near ? "earnings-near" : ""}">ER ${r.next_earnings_date}</span> ` +
+        `<span style="color:${near ? "#fbbf24" : "var(--muted)"};">(${r.earnings_in_days}d${near ? " ⚠" : ""})</span>`;
     }
+    const divEarningsHtml = (divLine || erLine)
+      ? [divLine, erLine].filter(Boolean).join("<br>")
+      : "&ndash;";
+
+    // Merged 52-week range cell: low – high.
+    const rangeHtml = (r.year_low != null || r.year_high != null)
+      ? `${fmtMoney(r.year_low)} &ndash; ${fmtMoney(r.year_high)}`
+      : "&ndash;";
 
     tr.innerHTML = `
       <td class="ticker">${r.ticker}</td>
       <td><span class="badge ${r.status}">${badgeLabel}</span></td>
       <td>${fmtMoney(r.current_price)}</td>
       <td>${r.expected_low != null ? `${fmtMoney(r.expected_low)} &ndash; ${fmtMoney(r.expected_high)}` : "&ndash;"}</td>
-      <td>${fmtMoney(r.year_high)}</td>
-      <td>${fmtMoney(r.year_low)}</td>
+      <td>${rangeHtml}</td>
       <td>
         <div class="progress-cell">
           <div class="progress-bar"><div class="${done ? "done" : ""}" style="width:${pct}%"></div></div>
@@ -162,8 +168,7 @@ function renderTable() {
         </div>
       </td>
       <td>${signalsHtml}</td>
-      <td>${dividendHtml}</td>
-      <td>${earningsHtml}</td>
+      <td class="div-earnings">${divEarningsHtml}</td>
       <td class="notes">${(r.notes || []).join("<br>")}</td>
     `;
     body.appendChild(tr);
