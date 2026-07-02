@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-01T23:13:02Z",
-  "duration_seconds": 579.4,
+  "generated_at": "2026-07-02T06:23:41Z",
+  "duration_seconds": 350.9,
   "criteria": {
     "max_price": 2.0,
     "min_price": 0.05,
@@ -13,65 +13,65 @@
   },
   "results": [
     {
-      "ticker": "RENX",
+      "ticker": "HIT",
       "status": "watch",
-      "current_price": 1.95,
-      "expected_low": 1.745,
-      "expected_high": 2.155,
-      "year_high": 47.2,
-      "year_low": 1.4,
-      "bandwidth_percentile": 5.83,
-      "avg_dollar_volume": 372698.15,
-      "volume_ratio": 0.9645,
-      "expansion_progress": 0.8387,
-      "confirmations_passed": 7,
+      "current_price": 1.06,
+      "expected_low": 0.9329,
+      "expected_high": 1.1871,
+      "year_high": 4.02,
+      "year_low": 0.83,
+      "bandwidth_percentile": 0.83,
+      "avg_dollar_volume": 155645.09,
+      "volume_ratio": 1.059,
+      "expansion_progress": 0.9209,
+      "confirmations_passed": 5,
       "confirmations_total": 8,
       "indicators": {
         "rsi": {
-          "pass": true,
-          "value": 56.8,
+          "pass": false,
+          "value": 49.49,
           "desc": "RSI in bullish-but-not-overbought band"
         },
         "macd": {
           "pass": true,
-          "value": 0.0408,
+          "value": 0.0135,
           "desc": "MACD line above signal line"
         },
         "momentum": {
-          "pass": true,
-          "value": 9.55,
+          "pass": false,
+          "value": -0.93,
           "desc": "N-day rate of change positive (%)"
         },
         "lsma": {
           "pass": true,
-          "value": 1.8401,
+          "value": 1.038,
           "desc": "Price above rising least-squares MA"
         },
         "ema": {
           "pass": true,
-          "value": 1.8028,
+          "value": 1.044,
           "desc": "Price above EMA"
         },
         "ichimoku": {
           "pass": false,
-          "value": 2.67,
+          "value": 1.47,
           "desc": "Price above the Ichimoku cloud"
         },
         "vwap": {
           "pass": true,
-          "value": 1.7778,
+          "value": 1.0327,
           "desc": "Price above rolling VWAP"
         },
         "mfi": {
           "pass": true,
-          "value": 72.68,
+          "value": 54.19,
           "desc": "Money Flow Index in bullish band"
         }
       },
       "notes": [
-        "Volume approaching expansion trigger (84% of the way there).",
-        "Bollinger band-width at 5.8th percentile of last 120 days.",
-        "Indicator confirmations: 7/8 passed. Failed: ICHIMOKU."
+        "Volume approaching expansion trigger (92% of the way there).",
+        "Bollinger band-width at 0.8th percentile of last 120 days.",
+        "Indicator confirmations: 5/8 passed. Failed: RSI, MOMENTUM, ICHIMOKU."
       ]
     }
   ]
