@@ -19,6 +19,47 @@ const API_BASE = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
 let latestData = { results: [] };
 let viewMode = "full"; // "full" = daily scan results, "custom" = user-provided ticker list
 
+// Column sorting: click a header to sort by it, click again to flip
+// direction. Default: alphabetical by ticker.
+let sortState = { key: "ticker", dir: "asc" };
+const STATUS_ORDER = { match: 0, watch: 1, none: 2 };
+
+function sortValue(r, key) {
+  if (key === "ticker") return r.ticker || "";
+  if (key === "status") return STATUS_ORDER[r.status] ?? 3;
+  return r[key]; // numeric fields; may be null/undefined
+}
+
+function sortResults(rows) {
+  const { key, dir } = sortState;
+  const mul = dir === "asc" ? 1 : -1;
+  return [...rows].sort((a, b) => {
+    const va = sortValue(a, key);
+    const vb = sortValue(b, key);
+    // nulls always sink to the bottom, regardless of direction
+    if (va == null && vb == null) return (a.ticker || "").localeCompare(b.ticker || "");
+    if (va == null) return 1;
+    if (vb == null) return -1;
+    let cmp;
+    if (typeof va === "string") cmp = va.localeCompare(vb);
+    else cmp = va - vb;
+    if (cmp === 0) return (a.ticker || "").localeCompare(b.ticker || "");
+    return cmp * mul;
+  });
+}
+
+function updateSortArrows() {
+  document.querySelectorAll("th.sortable").forEach((th) => {
+    let arrow = th.querySelector(".sort-arrow");
+    if (!arrow) {
+      arrow = document.createElement("span");
+      arrow.className = "sort-arrow";
+      th.appendChild(arrow);
+    }
+    arrow.textContent = th.dataset.key === sortState.key ? (sortState.dir === "asc" ? " ▲" : " ▼") : "";
+  });
+}
+
 const el = (id) => document.getElementById(id);
 
 function getToken() {
@@ -60,9 +101,11 @@ function renderTable() {
 
   // Custom-list mode shows every requested ticker unconditionally -- the
   // whole point is a quick glance at YOUR list, including non-qualifiers.
-  const visible = viewMode === "custom"
+  const filtered = viewMode === "custom"
     ? (latestData.results || [])
     : (latestData.results || []).filter((r) => (r.expansion_progress ?? 0) >= threshold);
+  const visible = sortResults(filtered);
+  updateSortArrows();
 
   el("total-count").textContent = (latestData.results || []).length;
   el("visible-count").textContent = visible.length;
@@ -91,6 +134,20 @@ function renderTable() {
 
     const badgeLabel = r.status === "match" ? "TRIGGERED" : r.status === "watch" ? "WATCH" : "NO SETUP";
 
+    let dividendHtml = "&ndash;";
+    if (r.dividend_ttm != null) {
+      dividendHtml = r.dividend_yield != null
+        ? `${r.dividend_yield.toFixed(2)}%<br><span style="font-size:11px;color:var(--muted);">$${r.dividend_ttm.toFixed(4)}/yr</span>`
+        : `$${r.dividend_ttm.toFixed(4)}/yr`;
+    }
+
+    let earningsHtml = "&ndash;";
+    if (r.next_earnings_date != null) {
+      const near = r.earnings_in_days != null && r.earnings_in_days <= 14;
+      earningsHtml = `<span class="${near ? "earnings-near" : ""}">${r.next_earnings_date}</span><br>` +
+        `<span style="font-size:11px;color:${near ? "#fbbf24" : "var(--muted)"};">in ${r.earnings_in_days}d${near ? " ⚠" : ""}</span>`;
+    }
+
     tr.innerHTML = `
       <td class="ticker">${r.ticker}</td>
       <td><span class="badge ${r.status}">${badgeLabel}</span></td>
@@ -105,6 +162,8 @@ function renderTable() {
         </div>
       </td>
       <td>${signalsHtml}</td>
+      <td>${dividendHtml}</td>
+      <td>${earningsHtml}</td>
       <td class="notes">${(r.notes || []).join("<br>")}</td>
     `;
     body.appendChild(tr);
@@ -378,6 +437,18 @@ function closeSettings() {
 el("threshold").addEventListener("input", () => {
   el("threshold-value").textContent = el("threshold").value;
   renderTable();
+});
+
+document.querySelectorAll("th.sortable").forEach((th) => {
+  th.addEventListener("click", () => {
+    const key = th.dataset.key;
+    if (sortState.key === key) {
+      sortState.dir = sortState.dir === "asc" ? "desc" : "asc";
+    } else {
+      sortState = { key, dir: "asc" };
+    }
+    renderTable();
+  });
 });
 
 el("btn-reload").addEventListener("click", async () => {

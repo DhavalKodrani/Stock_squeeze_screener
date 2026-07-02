@@ -97,6 +97,10 @@ class ScreenResult:
     confirmations_passed: Optional[int] = None   # of the enabled confirmation indicators
     confirmations_total: Optional[int] = None
     indicators: dict = field(default_factory=dict)  # per-indicator {"pass", "value", "desc"}
+    dividend_ttm: Optional[float] = None         # trailing-12-month dividend per share ($)
+    dividend_yield: Optional[float] = None       # dividend_ttm / current_price, as a %
+    next_earnings_date: Optional[str] = None     # ISO date of the next earnings report, if known
+    earnings_in_days: Optional[int] = None       # days until next_earnings_date
     notes: List[str] = field(default_factory=list)
 
 
@@ -659,6 +663,55 @@ def run_screen(tickers: List[str], cfg: dict, logger: logging.Logger, dry_run: b
     return results
 
 
+def enrich_results(results: List[ScreenResult], cfg: dict, logger: logging.Logger) -> None:
+    """Add dividend (trailing-12-month) and next-earnings-date info to each
+    result. Runs only on tickers that made it into the results (a handful),
+    never the whole universe -- each lookup is 1-2 extra HTTP calls. Any
+    failure just leaves the fields as None; never fails the run."""
+    e_cfg = cfg.get("enrichment", {})
+    if not e_cfg.get("enabled", True) or yf is None or not results:
+        return
+    near_days = e_cfg.get("earnings_near_days", 14)
+    max_n = e_cfg.get("max_tickers", 100)
+    today = datetime.now(timezone.utc).date()
+
+    for r in results[:max_n]:
+        try:
+            tk = yf.Ticker(r.ticker)
+
+            try:
+                divs = tk.dividends
+                if divs is not None and len(divs):
+                    cutoff = pd.Timestamp.now(tz=divs.index.tz) - pd.Timedelta(days=365)
+                    ttm = float(divs[divs.index >= cutoff].sum())
+                    if ttm > 0:
+                        r.dividend_ttm = round(ttm, 4)
+                        if r.current_price:
+                            r.dividend_yield = round(ttm / r.current_price * 100, 2)
+                        r.notes.append(f"Pays a dividend: ${ttm:.4f}/share over the last 12 months"
+                                       + (f" ({r.dividend_yield:.2f}% yield)." if r.dividend_yield else "."))
+            except Exception as e:
+                logger.debug(f"Dividend lookup failed for {r.ticker}: {e}")
+
+            try:
+                cal = tk.calendar
+                dates = cal.get("Earnings Date") if isinstance(cal, dict) else None
+                if dates:
+                    future = sorted(d for d in dates if d >= today)
+                    if future:
+                        nxt = future[0]
+                        r.next_earnings_date = nxt.isoformat()
+                        r.earnings_in_days = (nxt - today).days
+                        if r.earnings_in_days <= near_days:
+                            r.notes.append(f"Earnings result nearby: {nxt.isoformat()} ({r.earnings_in_days} day(s) away).")
+            except Exception as e:
+                logger.debug(f"Earnings-date lookup failed for {r.ticker}: {e}")
+        except Exception as e:
+            logger.debug(f"Enrichment failed for {r.ticker}: {e}")
+
+    logger.info(f"Enriched {min(len(results), max_n)} result(s) with dividend + earnings-date info.")
+
+
 # --------------------------------------------------------------------------- #
 # HTML report + email
 # --------------------------------------------------------------------------- #
@@ -686,6 +739,9 @@ def build_html_report(results: List[ScreenResult], cfg: dict) -> str:
             signals_html = f"{r.confirmations_passed}/{r.confirmations_total}<br><span style='font-size:11px;color:#777;'>{detail}</span>"
         else:
             signals_html = "&ndash;"
+        dividend_html = (f"{r.dividend_yield:.2f}% (${r.dividend_ttm:.4f})" if r.dividend_yield
+                         else (f"${r.dividend_ttm:.4f}" if r.dividend_ttm else "&ndash;"))
+        earnings_html = (f"{r.next_earnings_date} (in {r.earnings_in_days}d)" if r.next_earnings_date else "&ndash;")
         rows += f"""
         <tr>
           <td style="padding:8px;border:1px solid #ddd;font-weight:bold;">{r.ticker}</td>
@@ -695,6 +751,8 @@ def build_html_report(results: List[ScreenResult], cfg: dict) -> str:
           <td style="padding:8px;border:1px solid #ddd;">${r.year_low:.4f}</td>
           <td style="padding:8px;border:1px solid #ddd;">${r.avg_dollar_volume:,.0f}</td>
           <td style="padding:8px;border:1px solid #ddd;">{signals_html}</td>
+          <td style="padding:8px;border:1px solid #ddd;">{dividend_html}</td>
+          <td style="padding:8px;border:1px solid #ddd;">{earnings_html}</td>
           <td style="padding:8px;border:1px solid #ddd;font-size:12px;color:#555;">{notes_html}</td>
         </tr>"""
 
@@ -712,6 +770,8 @@ def build_html_report(results: List[ScreenResult], cfg: dict) -> str:
               <th style="padding:8px;border:1px solid #ddd;text-align:left;">52-Wk Low</th>
               <th style="padding:8px;border:1px solid #ddd;text-align:left;">Avg $ Volume</th>
               <th style="padding:8px;border:1px solid #ddd;text-align:left;">Signals</th>
+              <th style="padding:8px;border:1px solid #ddd;text-align:left;">Dividend (TTM)</th>
+              <th style="padding:8px;border:1px solid #ddd;text-align:left;">Next Earnings</th>
               <th style="padding:8px;border:1px solid #ddd;text-align:left;">Notes</th>
             </tr>
           </thead>
@@ -758,6 +818,10 @@ def build_results_json(results: List[ScreenResult], cfg: dict, duration_seconds:
             "confirmations_passed": r.confirmations_passed,
             "confirmations_total": r.confirmations_total,
             "indicators": r.indicators,
+            "dividend_ttm": r.dividend_ttm,
+            "dividend_yield": r.dividend_yield,
+            "next_earnings_date": r.next_earnings_date,
+            "earnings_in_days": r.earnings_in_days,
             "notes": r.notes,
         }
 
@@ -871,6 +935,7 @@ def main():
             sys.exit(1)
 
         results = run_screen(tickers, cfg, logger, dry_run=args.dry_run, include_all=custom_mode)
+        enrich_results(results, cfg, logger)
         matches = [r for r in results if r.status == "match"]
         watch = [r for r in results if r.status == "watch"]
         logger.info(f"Screening complete: {len(matches)} match(es), {len(watch)} on watch (near expansion).")

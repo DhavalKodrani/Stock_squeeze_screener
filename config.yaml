@@ -76,6 +76,14 @@ projection:
   atr_period: 14
   atr_multiplier: 1.5
 
+enrichment:
+  # Extra per-result info fetched only for tickers that made the report
+  # (never the whole universe): trailing-12-month dividend and the next
+  # earnings report date. "Near" earnings get flagged in the notes.
+  enabled: true
+  earnings_near_days: 14   # flag "result nearby" when earnings within this many days
+  max_tickers: 100         # safety cap on extra lookups per run
+
 confirmations:
   # Secondary indicator votes, applied only to tickers that already passed
   # the core filters (price cap, Bollinger squeeze, SMA trend, volume

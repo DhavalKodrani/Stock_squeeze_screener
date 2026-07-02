@@ -127,6 +127,11 @@
   .signals.sig-all { color: #4ade80; }
   .signals.sig-some { color: #fbbf24; }
 
+  th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+  th.sortable:hover { color: var(--text); }
+  th.sortable .sort-arrow { display: inline-block; width: 12px; color: var(--accent); }
+  .earnings-near { color: #fbbf24; font-weight: 700; }
+
   .modal-backdrop {
     display: none;
     position: fixed; inset: 0;
@@ -224,14 +229,16 @@
     <table id="results-table">
       <thead>
         <tr>
-          <th>Ticker</th>
-          <th>Status</th>
-          <th>Current Price</th>
-          <th>Expected Range (ATR)</th>
-          <th>52-Wk High</th>
-          <th>52-Wk Low</th>
-          <th>Expansion Progress</th>
-          <th title="Confirmation indicators passed: RSI, MACD, Momentum, LSMA, EMA, Ichimoku, VWAP, MFI. Hover a value for the breakdown.">Signals</th>
+          <th class="sortable" data-key="ticker">Ticker</th>
+          <th class="sortable" data-key="status">Status</th>
+          <th class="sortable" data-key="current_price">Current Price</th>
+          <th class="sortable" data-key="expected_low">Expected Range (ATR)</th>
+          <th class="sortable" data-key="year_high">52-Wk High</th>
+          <th class="sortable" data-key="year_low">52-Wk Low</th>
+          <th class="sortable" data-key="expansion_progress">Expansion Progress</th>
+          <th class="sortable" data-key="confirmations_passed" title="Confirmation indicators passed: RSI, MACD, Momentum, LSMA, EMA, Ichimoku, VWAP, MFI. Hover a value for the breakdown.">Signals</th>
+          <th class="sortable" data-key="dividend_yield" title="Trailing-12-month dividend per share and yield">Dividend</th>
+          <th class="sortable" data-key="earnings_in_days" title="Next earnings report date; highlighted when nearby">Earnings</th>
           <th>Notes</th>
         </tr>
       </thead>
