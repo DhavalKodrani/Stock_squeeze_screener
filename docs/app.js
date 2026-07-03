@@ -290,9 +290,10 @@ async function dispatchAndWait(inputs, runningLabel) {
     const errBody = await dispatchRes.text();
     if (dispatchRes.status === 403) {
       throw new Error(
-        `HTTP 403 from GitHub: fine-grained tokens are unreliable for triggering workflow runs, ` +
-        `even with Actions: Read and write set. Open Settings (⚙) and use a classic token ` +
-        `(github.com/settings/tokens/new) with the "repo" and "workflow" scopes checked instead.`
+        `HTTP 403: GitHub refused. Two common causes: (1) your GitHub account doesn't have access ` +
+        `to this repository — triggering scans requires being added as a collaborator by the repo ` +
+        `owner (viewing results needs nothing); or (2) you used a fine-grained token — use a ` +
+        `classic token (github.com/settings/tokens/new) with the "repo" and "workflow" scopes instead.`
       );
     }
     throw new Error(`Couldn't start the workflow (HTTP ${dispatchRes.status}): ${errBody.slice(0, 200)}`);

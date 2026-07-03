@@ -255,7 +255,11 @@
       token with access to this repo. It is stored only in your browser's local storage and is never
       committed anywhere &mdash; it's sent only to GitHub's API.
     </p>
-    <p>Create a <strong>classic</strong> personal access token (fine-grained tokens are
+    <p><strong>Prerequisite:</strong> your GitHub account must have access to this repository —
+      ask the repo owner to add you as a collaborator (and accept the email invite). Without that,
+      GitHub rejects scan requests with HTTP 403 no matter what token you use. Viewing results
+      needs no token and no access.</p>
+    <p>Then create a <strong>classic</strong> personal access token (fine-grained tokens are
       unreliable for triggering workflow runs via the API, even with the right permissions set):</p>
     <ol>
       <li>Go to <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener">github.com/settings/tokens/new</a></li>
