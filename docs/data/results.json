@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-03T07:26:41Z",
-  "duration_seconds": 379.5,
+  "generated_at": "2026-07-03T16:37:26Z",
+  "duration_seconds": 396.8,
   "mode": "full",
   "criteria": {
     "max_price": 2.0,
@@ -9,9 +9,76 @@
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 0,
+    "match": 1,
     "watch": 0,
     "none": 0
   },
-  "results": []
+  "results": [
+    {
+      "ticker": "RENX",
+      "status": "match",
+      "current_price": 2.0,
+      "expected_low": 1.8259,
+      "expected_high": 2.1741,
+      "year_high": 47.2,
+      "year_low": 1.4,
+      "bandwidth_percentile": 10.0,
+      "avg_dollar_volume": 342750.0,
+      "volume_ratio": 1.3479,
+      "expansion_progress": 1.1721,
+      "confirmations_passed": 7,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": true,
+          "value": 58.98,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 0.0452,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 11.11,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": true,
+          "value": 1.8659,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": 1.8207,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 2.67,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": 1.8043,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": true,
+          "value": 63.97,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "dividend_ttm": null,
+      "dividend_yield": null,
+      "next_earnings_date": null,
+      "earnings_in_days": null,
+      "notes": [
+        "Volume contracted then expanded on latest bar.",
+        "Bollinger band-width at 10.0th percentile of last 120 days.",
+        "Indicator confirmations: 7/8 passed. Failed: ICHIMOKU."
+      ]
+    }
+  ]
 }
