@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-03T22:38:14Z",
-  "duration_seconds": 467.6,
+  "generated_at": "2026-07-06T22:49:20Z",
+  "duration_seconds": 441.0,
   "mode": "full",
   "criteria": {
     "max_price": 2.0,
@@ -9,76 +9,9 @@
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 1,
+    "match": 0,
     "watch": 0,
     "none": 0
   },
-  "results": [
-    {
-      "ticker": "ABLV",
-      "status": "match",
-      "current_price": 1.19,
-      "expected_low": 1.0805,
-      "expected_high": 1.2995,
-      "year_high": 1.77,
-      "year_low": 0.54,
-      "bandwidth_percentile": 10.0,
-      "avg_dollar_volume": 128906.76,
-      "volume_ratio": 1.5527,
-      "expansion_progress": 1.3502,
-      "confirmations_passed": 7,
-      "confirmations_total": 8,
-      "indicators": {
-        "rsi": {
-          "pass": true,
-          "value": 68.6,
-          "desc": "RSI in bullish-but-not-overbought band"
-        },
-        "macd": {
-          "pass": false,
-          "value": -0.0015,
-          "desc": "MACD line above signal line"
-        },
-        "momentum": {
-          "pass": true,
-          "value": 8.18,
-          "desc": "N-day rate of change positive (%)"
-        },
-        "lsma": {
-          "pass": true,
-          "value": 1.1363,
-          "desc": "Price above rising least-squares MA"
-        },
-        "ema": {
-          "pass": true,
-          "value": 1.0987,
-          "desc": "Price above EMA"
-        },
-        "ichimoku": {
-          "pass": true,
-          "value": 0.9238,
-          "desc": "Price above the Ichimoku cloud"
-        },
-        "vwap": {
-          "pass": true,
-          "value": 1.103,
-          "desc": "Price above rolling VWAP"
-        },
-        "mfi": {
-          "pass": true,
-          "value": 68.46,
-          "desc": "Money Flow Index in bullish band"
-        }
-      },
-      "dividend_ttm": null,
-      "dividend_yield": null,
-      "next_earnings_date": null,
-      "earnings_in_days": null,
-      "notes": [
-        "Volume contracted then expanded on latest bar.",
-        "Bollinger band-width at 10.0th percentile of last 120 days.",
-        "Indicator confirmations: 7/8 passed. Failed: MACD."
-      ]
-    }
-  ]
+  "results": []
 }
