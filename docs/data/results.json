@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-07T11:20:39Z",
-  "duration_seconds": 464.7,
+  "generated_at": "2026-07-07T22:43:21Z",
+  "duration_seconds": 542.6,
   "mode": "full",
   "criteria": {
     "max_price": 2.0,
@@ -10,8 +10,75 @@
   },
   "counts": {
     "match": 0,
-    "watch": 0,
+    "watch": 1,
     "none": 0
   },
-  "results": []
+  "results": [
+    {
+      "ticker": "TURB",
+      "status": "watch",
+      "current_price": 1.6,
+      "expected_low": 1.4115,
+      "expected_high": 1.7885,
+      "year_high": 20.45,
+      "year_low": 0.57,
+      "bandwidth_percentile": 0.83,
+      "avg_dollar_volume": 598655.93,
+      "volume_ratio": 1.0699,
+      "expansion_progress": 0.9303,
+      "confirmations_passed": 6,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": true,
+          "value": 54.49,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 0.012,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 16.79,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": false,
+          "value": 1.4763,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": 1.5142,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 2.63,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": 1.5653,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": true,
+          "value": 65.12,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "dividend_ttm": null,
+      "dividend_yield": null,
+      "next_earnings_date": null,
+      "earnings_in_days": null,
+      "notes": [
+        "Volume approaching expansion trigger (93% of the way there).",
+        "Bollinger band-width at 0.8th percentile of last 120 days.",
+        "Indicator confirmations: 6/8 passed. Failed: LSMA, ICHIMOKU."
+      ]
+    }
+  ]
 }
