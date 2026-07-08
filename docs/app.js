@@ -225,6 +225,21 @@ async function fetchJsonViaContentsApi(path) {
 // className of nodes whose state actually changed.
 let scanGrid = { tickers: null, nodes: [] };
 
+// progress.json lingers from the PREVIOUS run until the new run's first
+// commit lands (~1 min while the runner installs dependencies). Without a
+// cutoff, the panel would show the old run's finished state -- everything
+// yellow/green -- before the new scan has even started. Only progress
+// generated after this timestamp gets rendered (2 min of clock-skew slack).
+let progressCutoffMs = 0;
+
+function resetScanPanel(message) {
+  el("scan-progress-panel").style.display = "block";
+  el("scan-current-ticker").textContent = "–";
+  el("scan-counts").textContent = message;
+  el("scan-ticker-grid").innerHTML = "";
+  scanGrid = { tickers: null, nodes: [] };
+}
+
 function ensureScanGridBuilt(tickers) {
   const same =
     scanGrid.tickers &&
@@ -269,7 +284,9 @@ function renderScanProgress(data) {
 async function fetchAndRenderProgress() {
   try {
     const data = await fetchJsonViaContentsApi(PROGRESS_PATH);
-    if (data) renderScanProgress(data);
+    if (data && data.generated_at && Date.parse(data.generated_at) >= progressCutoffMs) {
+      renderScanProgress(data);
+    }
   } catch (err) {
     // Best effort -- live progress is a nice-to-have, don't fail the whole refresh over it.
   }
@@ -298,6 +315,11 @@ async function dispatchAndWait(inputs, runningLabel) {
     }
     throw new Error(`Couldn't start the workflow (HTTP ${dispatchRes.status}): ${errBody.slice(0, 200)}`);
   }
+
+  // Ignore progress.json left over from previous runs, and clear the panel
+  // so the old run's yellow/green chips never show before this run starts.
+  progressCutoffMs = dispatchedAt - 120000;
+  resetScanPanel("waiting for the scan to initialize…");
 
   setStatus("Run queued, waiting for it to start...");
   let run = null;
