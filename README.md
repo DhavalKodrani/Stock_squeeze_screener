@@ -115,11 +115,12 @@ history.
 
 ## 5. Schedule
 
-The workflow (`.github/workflows/daily-screener.yml`) runs **weekdays at
-21:30 UTC** (after the US market close) by default. Edit the `cron` line to
-change the time — cron is always UTC. You can also trigger it manually from
-the **Actions** tab, or from the UI's "Refresh Now" button (needs a token, see
-above).
+The workflow (`.github/workflows/daily-screener.yml`) runs on two schedules:
+**weekdays at 21:30 UTC** (after the US market close) and **daily at 04:00
+UTC** (5:00am UK during British Summer Time; 4:00am in UK winter, since cron
+is always UTC and can't follow DST). Edit the `cron` lines to change the
+times. You can also trigger it manually from the **Actions** tab, or from the
+UI's "Refresh Now" button (needs a token, see above).
 
 ## 6. Configure thresholds
 
