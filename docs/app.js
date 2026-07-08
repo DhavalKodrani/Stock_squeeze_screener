@@ -187,6 +187,9 @@ async function loadSavedResults(bustCache) {
 async function ghApi(path, opts = {}) {
   const token = getToken();
   const res = await fetch(`${API_BASE}${path}`, {
+    // GitHub's API sends max-age=60; without no-store, polling loops can get
+    // browser-cached responses up to a minute old (stale progress/results).
+    cache: "no-store",
     ...opts,
     headers: {
       Accept: "application/vnd.github+json",
@@ -227,10 +230,12 @@ let scanGrid = { tickers: null, nodes: [] };
 
 // progress.json lingers from the PREVIOUS run until the new run's first
 // commit lands (~1 min while the runner installs dependencies). Without a
-// cutoff, the panel would show the old run's finished state -- everything
-// yellow/green -- before the new scan has even started. Only progress
-// generated after this timestamp gets rendered (2 min of clock-skew slack).
-let progressCutoffMs = 0;
+// guard, the panel would show the old run's finished state -- everything
+// yellow/green -- before the new scan has even started. At dispatch time we
+// snapshot the current file's generated_at and only render progress that is
+// strictly newer than that baseline (a time-slack cutoff fails when runs
+// are triggered back-to-back within the slack window).
+let progressBaseline = null;
 
 function resetScanPanel(message) {
   el("scan-progress-panel").style.display = "block";
@@ -284,7 +289,8 @@ function renderScanProgress(data) {
 async function fetchAndRenderProgress() {
   try {
     const data = await fetchJsonViaContentsApi(PROGRESS_PATH);
-    if (data && data.generated_at && Date.parse(data.generated_at) >= progressCutoffMs) {
+    // ISO-8601 UTC timestamps compare correctly as strings.
+    if (data && data.generated_at && (!progressBaseline || data.generated_at > progressBaseline)) {
       renderScanProgress(data);
     }
   } catch (err) {
@@ -316,9 +322,17 @@ async function dispatchAndWait(inputs, runningLabel) {
     throw new Error(`Couldn't start the workflow (HTTP ${dispatchRes.status}): ${errBody.slice(0, 200)}`);
   }
 
-  // Ignore progress.json left over from previous runs, and clear the panel
-  // so the old run's yellow/green chips never show before this run starts.
-  progressCutoffMs = dispatchedAt - 120000;
+  // Snapshot the pre-dispatch progress.json so anything at-or-before this
+  // baseline is ignored, and clear the panel so the old run's yellow/green
+  // chips never show before this run starts. The new run cannot have written
+  // progress yet (runner setup takes ~1 min), so whatever is in the file
+  // right now is by definition the previous run's.
+  try {
+    const prev = await fetchJsonViaContentsApi(PROGRESS_PATH);
+    progressBaseline = (prev && prev.generated_at) || null;
+  } catch (err) {
+    progressBaseline = null;
+  }
   resetScanPanel("waiting for the scan to initialize…");
 
   setStatus("Run queued, waiting for it to start...");
