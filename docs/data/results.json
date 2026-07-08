@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-07T22:43:21Z",
-  "duration_seconds": 542.6,
+  "generated_at": "2026-07-08T06:58:19Z",
+  "duration_seconds": 308.9,
   "mode": "full",
   "criteria": {
     "max_price": 2.0,
@@ -9,23 +9,23 @@
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 0,
-    "watch": 1,
+    "match": 1,
+    "watch": 0,
     "none": 0
   },
   "results": [
     {
       "ticker": "TURB",
-      "status": "watch",
+      "status": "match",
       "current_price": 1.6,
       "expected_low": 1.4115,
       "expected_high": 1.7885,
       "year_high": 20.45,
       "year_low": 0.57,
       "bandwidth_percentile": 0.83,
-      "avg_dollar_volume": 598655.93,
-      "volume_ratio": 1.0699,
-      "expansion_progress": 0.9303,
+      "avg_dollar_volume": 601960.01,
+      "volume_ratio": 1.1738,
+      "expansion_progress": 1.0207,
       "confirmations_passed": 6,
       "confirmations_total": 8,
       "indicators": {
@@ -61,12 +61,12 @@
         },
         "vwap": {
           "pass": true,
-          "value": 1.5653,
+          "value": 1.5655,
           "desc": "Price above rolling VWAP"
         },
         "mfi": {
           "pass": true,
-          "value": 65.12,
+          "value": 65.85,
           "desc": "Money Flow Index in bullish band"
         }
       },
@@ -75,7 +75,7 @@
       "next_earnings_date": null,
       "earnings_in_days": null,
       "notes": [
-        "Volume approaching expansion trigger (93% of the way there).",
+        "Volume contracted then expanded on latest bar.",
         "Bollinger band-width at 0.8th percentile of last 120 days.",
         "Indicator confirmations: 6/8 passed. Failed: LSMA, ICHIMOKU."
       ]
