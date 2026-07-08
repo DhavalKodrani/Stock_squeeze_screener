@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-08T06:58:19Z",
-  "duration_seconds": 308.9,
+  "generated_at": "2026-07-08T20:11:47Z",
+  "duration_seconds": 351.5,
   "mode": "full",
   "criteria": {
     "max_price": 2.0,
@@ -15,58 +15,58 @@
   },
   "results": [
     {
-      "ticker": "TURB",
+      "ticker": "AUTL",
       "status": "match",
-      "current_price": 1.6,
-      "expected_low": 1.4115,
-      "expected_high": 1.7885,
-      "year_high": 20.45,
-      "year_low": 0.57,
-      "bandwidth_percentile": 0.83,
-      "avg_dollar_volume": 601960.01,
-      "volume_ratio": 1.1738,
-      "expansion_progress": 1.0207,
-      "confirmations_passed": 6,
+      "current_price": 1.7,
+      "expected_low": 1.552,
+      "expected_high": 1.848,
+      "year_high": 2.7,
+      "year_low": 1.175,
+      "bandwidth_percentile": 10.0,
+      "avg_dollar_volume": 1772886.78,
+      "volume_ratio": 1.5834,
+      "expansion_progress": 1.3769,
+      "confirmations_passed": 7,
       "confirmations_total": 8,
       "indicators": {
         "rsi": {
           "pass": true,
-          "value": 54.49,
+          "value": 58.26,
           "desc": "RSI in bullish-but-not-overbought band"
         },
         "macd": {
           "pass": true,
-          "value": 0.012,
+          "value": 0.0119,
           "desc": "MACD line above signal line"
         },
         "momentum": {
           "pass": true,
-          "value": 16.79,
+          "value": 2.41,
           "desc": "N-day rate of change positive (%)"
         },
         "lsma": {
-          "pass": false,
-          "value": 1.4763,
+          "pass": true,
+          "value": 1.6068,
           "desc": "Price above rising least-squares MA"
         },
         "ema": {
           "pass": true,
-          "value": 1.5142,
+          "value": 1.6017,
           "desc": "Price above EMA"
         },
         "ichimoku": {
           "pass": false,
-          "value": 2.63,
+          "value": 1.7225,
           "desc": "Price above the Ichimoku cloud"
         },
         "vwap": {
           "pass": true,
-          "value": 1.5655,
+          "value": 1.5758,
           "desc": "Price above rolling VWAP"
         },
         "mfi": {
           "pass": true,
-          "value": 65.85,
+          "value": 62.63,
           "desc": "Money Flow Index in bullish band"
         }
       },
@@ -76,8 +76,8 @@
       "earnings_in_days": null,
       "notes": [
         "Volume contracted then expanded on latest bar.",
-        "Bollinger band-width at 0.8th percentile of last 120 days.",
-        "Indicator confirmations: 6/8 passed. Failed: LSMA, ICHIMOKU."
+        "Bollinger band-width at 10.0th percentile of last 120 days.",
+        "Indicator confirmations: 7/8 passed. Failed: ICHIMOKU."
       ]
     }
   ]
