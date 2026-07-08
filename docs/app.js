@@ -144,7 +144,7 @@ function renderTable() {
     if (r.next_earnings_date != null) {
       const near = r.earnings_in_days != null && r.earnings_in_days <= 14;
       erLine = `<span class="${near ? "earnings-near" : ""}">ER ${r.next_earnings_date}</span> ` +
-        `<span style="color:${near ? "#fbbf24" : "var(--muted)"};">(${r.earnings_in_days}d${near ? " ⚠" : ""})</span>`;
+        `<span style="color:${near ? "var(--amber)" : "var(--muted)"};">(${r.earnings_in_days}d${near ? " ⚠" : ""})</span>`;
     }
     const divEarningsHtml = (divLine || erLine)
       ? [divLine, erLine].filter(Boolean).join("<br>")
@@ -502,6 +502,35 @@ el("btn-reload").addEventListener("click", async () => {
   } catch (err) {
     setStatus(err.message || String(err), "error");
   }
+});
+
+// --- Theme (dark default, light optional, remembered per browser) ----------
+const THEME_KEY = "ssq_theme";
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  el("btn-theme").textContent = theme === "light" ? "🌙" : "☀️";
+  el("btn-theme").title = theme === "light" ? "Switch to dark theme" : "Switch to light theme";
+}
+let currentTheme = localStorage.getItem(THEME_KEY) || "dark";
+applyTheme(currentTheme);
+el("btn-theme").addEventListener("click", () => {
+  currentTheme = currentTheme === "light" ? "dark" : "light";
+  localStorage.setItem(THEME_KEY, currentTheme);
+  applyTheme(currentTheme);
+});
+
+// --- Collapsible scan grid (state remembered per browser) ------------------
+const GRID_KEY = "ssq_grid_collapsed";
+function applyGridCollapsed(collapsed) {
+  el("scan-ticker-grid").style.display = collapsed ? "none" : "grid";
+  el("btn-toggle-grid").textContent = collapsed ? "show ticker list ▾" : "hide ticker list ▴";
+}
+let gridCollapsed = localStorage.getItem(GRID_KEY) === "1";
+applyGridCollapsed(gridCollapsed);
+el("btn-toggle-grid").addEventListener("click", () => {
+  gridCollapsed = !gridCollapsed;
+  localStorage.setItem(GRID_KEY, gridCollapsed ? "1" : "0");
+  applyGridCollapsed(gridCollapsed);
 });
 
 el("btn-refresh").addEventListener("click", triggerRefresh);

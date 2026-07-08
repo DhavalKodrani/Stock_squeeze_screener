@@ -15,6 +15,35 @@
     --match: #16a34a;
     --watch: #d97706;
     --danger: #dc2626;
+    --green: #4ade80;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --red-bg: #3b1414;
+    --chip-bg: #0f172a;
+    --chip-pending: #ffffff;
+    --input-bg: #0f172a;
+    --btn-bg: #263449;
+    --warn-bg: #3b1d0e;
+    --warn-border: #b45309;
+    --warn-text: #fcd34d;
+  }
+  html[data-theme="light"] {
+    --bg: #f1f5f9;
+    --panel: #ffffff;
+    --border: #cbd5e1;
+    --text: #0f172a;
+    --muted: #64748b;
+    --green: #15803d;
+    --amber: #b45309;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --chip-bg: #f8fafc;
+    --chip-pending: #334155;
+    --input-bg: #ffffff;
+    --btn-bg: #e2e8f0;
+    --warn-bg: #fff7ed;
+    --warn-border: #fdba74;
+    --warn-text: #9a3412;
   }
   * { box-sizing: border-box; }
   body {
@@ -28,9 +57,9 @@
   h1 { font-size: 22px; margin-bottom: 4px; }
   .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
   .disclaimer {
-    background: #3b1d0e;
-    border: 1px solid #b45309;
-    color: #fcd34d;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    color: var(--warn-text);
     font-size: 12.5px;
     padding: 10px 14px;
     border-radius: 8px;
@@ -60,7 +89,7 @@
     padding: 9px 16px;
     border-radius: 7px;
     border: 1px solid var(--border);
-    background: #263449;
+    background: var(--btn-bg);
     color: var(--text);
     cursor: pointer;
   }
@@ -68,8 +97,8 @@
   button.primary:disabled { opacity: 0.5; cursor: not-allowed; }
   button.link { background: none; border: none; color: var(--accent); text-decoration: underline; padding: 0; }
   #status-line { font-size: 12.5px; color: var(--muted); min-height: 18px; margin-top: 8px; }
-  #status-line.error { color: #f87171; }
-  #status-line.ok { color: #4ade80; }
+  #status-line.error { color: var(--red); }
+  #status-line.ok { color: var(--green); }
 
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
@@ -84,11 +113,11 @@
     font-size: 11px;
     font-weight: 700;
   }
-  .badge.match { background: rgba(22,163,74,0.18); color: #4ade80; }
-  .badge.watch { background: rgba(217,119,6,0.18); color: #fbbf24; }
-  .badge.none { background: rgba(148,163,184,0.15); color: #94a3b8; }
+  .badge.match { background: rgba(22,163,74,0.18); color: var(--green); }
+  .badge.watch { background: rgba(217,119,6,0.18); color: var(--amber); }
+  .badge.none { background: rgba(148,163,184,0.15); color: var(--muted); }
   .progress-cell { display: flex; align-items: center; gap: 8px; }
-  .progress-bar { width: 80px; height: 6px; background: #334155; border-radius: 4px; overflow: hidden; }
+  .progress-bar { width: 80px; height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
   .progress-bar > div { height: 100%; background: var(--watch); }
   .progress-bar > div.done { background: var(--match); }
   #empty-state { color: var(--muted); font-size: 13px; padding: 20px 0; text-align: center; }
@@ -112,26 +141,26 @@
     border-radius: 4px;
     font-family: monospace;
     font-size: 11.5px;
-    background: #0f172a;
+    background: var(--chip-bg);
     border: 1px solid transparent;
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .scan-chip.scan-pending { color: #ffffff; opacity: 0.9; }
-  .scan-chip.scan-none { color: #facc15; }
-  .scan-chip.scan-hit { color: #4ade80; font-weight: 700; font-size: 15.5px; }
-  .scan-chip.scan-current { color: #f87171; font-weight: 700; border-color: #f87171; background: #3b1414; }
+  .scan-chip.scan-pending { color: var(--chip-pending); opacity: 0.9; }
+  .scan-chip.scan-none { color: var(--amber); }
+  .scan-chip.scan-hit { color: var(--green); font-weight: 700; font-size: 15.5px; }
+  .scan-chip.scan-current { color: var(--red); font-weight: 700; border-color: var(--red); background: var(--red-bg); }
 
   .signals { font-weight: 700; cursor: help; border-bottom: 1px dotted var(--muted); }
-  .signals.sig-all { color: #4ade80; }
-  .signals.sig-some { color: #fbbf24; }
+  .signals.sig-all { color: var(--green); }
+  .signals.sig-some { color: var(--amber); }
 
   th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
   th.sortable:hover { color: var(--text); }
   th.sortable .sort-arrow { display: inline-block; width: 12px; color: var(--accent); }
-  .earnings-near { color: #fbbf24; font-weight: 700; }
+  .earnings-near { color: var(--amber); font-weight: 700; }
 
   .modal-backdrop {
     display: none;
@@ -156,14 +185,32 @@
     padding: 8px 10px;
     border-radius: 6px;
     border: 1px solid var(--border);
-    background: #0f172a;
+    background: var(--input-bg);
     color: var(--text);
     font-family: monospace;
     margin: 8px 0 14px 0;
   }
   .modal .row { display: flex; gap: 8px; justify-content: flex-end; }
   ol { font-size: 13px; color: var(--muted); padding-left: 18px; line-height: 1.7; }
-  code { background: #0f172a; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+  code { background: var(--chip-bg); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+
+  #custom-tickers { background: var(--input-bg) !important; }
+  .panel { overflow-x: auto; }
+
+  /* --- Mobile --- */
+  @media (max-width: 820px) {
+    body { padding: 10px; }
+    h1 { font-size: 18px; }
+    .controls { flex-direction: column; align-items: stretch; gap: 12px; }
+    .controls .group { min-width: 0; align-items: stretch !important; margin-left: 0 !important; }
+    input[type=range] { width: 100%; }
+    button { padding: 10px 12px; }
+    table { font-size: 12px; }
+    th, td { padding: 6px 6px; }
+    td.notes { min-width: 180px; max-width: 240px; }
+    #scan-ticker-grid { grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); max-height: 220px !important; }
+    .modal { width: 95%; padding: 14px; }
+  }
 </style>
 </head>
 <body>
@@ -190,9 +237,10 @@
       </div>
       <div class="group" style="margin-left:auto; align-items:flex-end;">
         <label>&nbsp;</label>
-        <div style="display:flex; gap:8px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button id="btn-reload" title="Re-fetch the last saved results.json, no token needed">↻ Reload saved data</button>
           <button id="btn-refresh" class="primary">▶ Refresh Now (run new scan)</button>
+          <button id="btn-theme" title="Toggle light / dark theme">☀️</button>
           <button id="btn-settings" title="Set or clear your GitHub token">⚙</button>
         </div>
       </div>
@@ -204,14 +252,14 @@
     <div class="controls">
       <div class="group" style="flex:1; min-width:320px;">
         <label for="custom-tickers">Analyze specific tickers (comma-separated) &mdash; every ticker gets the full analysis, including why it does/doesn't qualify</label>
-        <div style="display:flex; gap:8px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <input type="text" id="custom-tickers" placeholder="e.g. MBOT, PLUG, SNDL, TSLA"
-                 style="flex:1; padding:9px 12px; border-radius:7px; border:1px solid var(--border); background:#0f172a; color:var(--text); font-family:monospace; font-size:13px;">
+                 style="flex:1; min-width:200px; padding:9px 12px; border-radius:7px; border:1px solid var(--border); color:var(--text); font-family:monospace; font-size:13px;">
           <button id="btn-analyze" class="primary">🔎 Analyze My List</button>
         </div>
       </div>
     </div>
-    <div id="custom-banner" style="display:none; margin-top:10px; font-size:13px; color:#fbbf24;">
+    <div id="custom-banner" style="display:none; margin-top:10px; font-size:13px; color:var(--amber);">
       Showing custom analysis of <span id="custom-count">0</span> ticker(s)
       &mdash; <button class="link" id="btn-back-full">back to full scan results</button>
     </div>
@@ -219,9 +267,11 @@
 
   <div class="panel" id="scan-progress-panel" style="display:none;">
     <div class="meta" style="margin-bottom:10px; font-size:13px;">
-      Currently scanning: <strong id="scan-current-ticker" style="color:#f87171;">&ndash;</strong>
+      Currently scanning: <strong id="scan-current-ticker" style="color:var(--red);">&ndash;</strong>
       &nbsp;&mdash;&nbsp;
       <span id="scan-counts">0 / 0 scanned</span>
+      &nbsp;&mdash;&nbsp;
+      <button class="link" id="btn-toggle-grid">hide ticker list ▴</button>
     </div>
     <div id="scan-ticker-grid" style="max-height:300px;"></div>
   </div>

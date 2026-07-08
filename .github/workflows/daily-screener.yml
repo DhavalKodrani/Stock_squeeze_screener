@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: write   # needed to commit docs/data/results.json back to the repo
+  issues: write     # needed to open alert issues when matches are found
 
 jobs:
   screen:
@@ -61,6 +62,48 @@ jobs:
             python screener.py --config config.yaml --tickers "$CUSTOM_TICKERS"
           else
             python screener.py --config config.yaml
+          fi
+
+      - name: Open alert issue when matches found (phone notification)
+        # An issue assigned to the owner triggers a GitHub mobile-app push /
+        # email notification with zero SMTP setup. Full scans only -- custom
+        # ticker-list analyses are interactive and don't need alerts.
+        if: github.event.inputs.tickers == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          python - << 'EOF'
+          import json
+          d = json.load(open("docs/data/results.json", encoding="utf-8"))
+          ms = [r for r in d.get("results", []) if r.get("status") == "match"]
+          lines = []
+          for r in ms:
+              sig = (f"{r['confirmations_passed']}/{r['confirmations_total']}"
+                     if r.get("confirmations_total") else "-")
+              lines.append(
+                  f"| **{r['ticker']}** | ${r['current_price']} | "
+                  f"${r['expected_low']} - ${r['expected_high']} | "
+                  f"${r['year_low']} - ${r['year_high']} | {sig} |")
+          body = (f"The scan at {d.get('generated_at')} found **{len(ms)} TRIGGERED match(es)**:\n\n"
+                  "| Ticker | Price | Expected range (ATR) | 52-wk range | Signals |\n"
+                  "|---|---|---|---|---|\n" + "\n".join(lines) +
+                  "\n\n[Open the dashboard](https://dhavalkodrani.github.io/Stock_squeeze_screener/)"
+                  "\n\n*Automated technical screen -- not financial advice. Verify independently.*")
+          open("issue_body.md", "w", encoding="utf-8").write(body)
+          open("matches.txt", "w").write(",".join(r["ticker"] for r in ms))
+          EOF
+          TICKERS=$(cat matches.txt)
+          if [ -z "$TICKERS" ]; then
+            echo "No matches -- no alert issue."
+            exit 0
+          fi
+          TITLE="🔔 Squeeze alert $(date -u +%Y-%m-%d): $TICKERS"
+          EXISTING=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[].number' | head -1)
+          if [ -n "$EXISTING" ]; then
+            echo "Alert issue #$EXISTING already open for today's matches, skipping."
+          else
+            gh issue create --title "$TITLE" --body-file issue_body.md --assignee "$OWNER"
           fi
 
       - name: Commit results for the GitHub Pages UI

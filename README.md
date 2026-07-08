@@ -83,6 +83,14 @@ Add these five secrets:
 If you skip this entirely, the screener still runs and still updates the UI —
 it just won't email you. You can add these secrets later at any time.
 
+**Built-in phone notifications (no setup):** whenever a full scan finds a
+TRIGGERED match, the workflow opens a GitHub issue titled
+"🔔 Squeeze alert <date>: <tickers>" assigned to the repo owner. Being
+assigned triggers a push notification in the GitHub mobile app (and an email,
+per your GitHub notification settings) — install the GitHub app and enable
+notifications to get alerts on your phone. One issue per day per ticker set;
+close them whenever, they're just alerts.
+
 ## 4. (Optional) Enable the "Refresh Now" button
 
 The GitHub Pages UI always shows the latest saved results with no setup. To
