@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-08T19:57:17Z",
-  "duration_seconds": 2.2,
+  "generated_at": "2026-07-08T19:59:06Z",
+  "duration_seconds": 2.9,
   "mode": "custom",
   "criteria": {
     "max_price": 2.0,
@@ -15,7 +15,7 @@
   },
   "results": [
     {
-      "ticker": "PSTV",
+      "ticker": "DVLT",
       "status": "none",
       "current_price": null,
       "expected_low": null,
@@ -31,8 +31,8 @@
       "indicators": {},
       "dividend_ttm": null,
       "dividend_yield": null,
-      "next_earnings_date": null,
-      "earnings_in_days": null,
+      "next_earnings_date": "2026-08-13",
+      "earnings_in_days": 36,
       "notes": [
         "Analysis failed: ['Open', 'High', 'Low', 'Close', 'Volume']"
       ]
