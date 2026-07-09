@@ -27,8 +27,20 @@ const STATUS_ORDER = { match: 0, watch: 1, none: 2 };
 function sortValue(r, key) {
   if (key === "ticker") return r.ticker || "";
   if (key === "status") return STATUS_ORDER[r.status] ?? 3;
+  if (key === "latest_volume") return (r.recent_volumes && r.recent_volumes.length) ? r.recent_volumes[0] : null;
   return r[key]; // numeric fields; may be null/undefined
 }
+
+function fmtVolume(v) {
+  if (v == null) return "–";
+  const n = Number(v);
+  if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
+  if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
+  if (n >= 1e3) return (n / 1e3).toFixed(0) + "K";
+  return String(Math.round(n));
+}
+
+const TRADINGVIEW_BASE = "https://in.tradingview.com/symbols/";
 
 function sortResults(rows) {
   const { key, dir } = sortState;
@@ -155,8 +167,18 @@ function renderTable() {
       ? `${fmtMoney(r.year_low)} &ndash; ${fmtMoney(r.year_high)}`
       : "&ndash;";
 
+    // Last-10-bars volume, stacked D1 (latest) .. Dn.
+    let vol10Html = "&ndash;";
+    if (r.recent_volumes && r.recent_volumes.length) {
+      vol10Html = r.recent_volumes
+        .map((v, i) => `<span class="vd">D${i + 1}:</span> ${fmtVolume(v)}`)
+        .join("<br>");
+    }
+
+    const tvUrl = TRADINGVIEW_BASE + encodeURIComponent(r.ticker) + "/";
+
     tr.innerHTML = `
-      <td class="ticker">${r.ticker}</td>
+      <td class="ticker"><a href="${tvUrl}" target="_blank" rel="noopener" title="Open ${r.ticker} on TradingView">${r.ticker}</a></td>
       <td><span class="badge ${r.status}">${badgeLabel}</span></td>
       <td>${fmtMoney(r.current_price)}</td>
       <td>${r.expected_low != null ? `${fmtMoney(r.expected_low)} &ndash; ${fmtMoney(r.expected_high)}` : "&ndash;"}</td>
@@ -169,6 +191,7 @@ function renderTable() {
       </td>
       <td>${signalsHtml}</td>
       <td class="div-earnings">${divEarningsHtml}</td>
+      <td class="vol10">${vol10Html}</td>
       <td class="notes">${(r.notes || []).join("<br>")}</td>
     `;
     body.appendChild(tr);

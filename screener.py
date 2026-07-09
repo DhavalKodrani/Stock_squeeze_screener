@@ -102,6 +102,7 @@ class ScreenResult:
     dividend_yield: Optional[float] = None       # dividend_ttm / current_price, as a %
     next_earnings_date: Optional[str] = None     # ISO date of the next earnings report, if known
     earnings_in_days: Optional[int] = None       # days until next_earnings_date
+    recent_volumes: List[float] = field(default_factory=list)  # last ~10 bars' volume, most-recent first
     year_high_cached: bool = False   # true when year_high/low came from cache, not a fresh fetch
     notes: List[str] = field(default_factory=list)
 
@@ -591,6 +592,9 @@ def evaluate_ticker(ticker: str, df: pd.DataFrame, cfg: dict, include_all: bool 
         year_low = float(df["Low"].min())
         year_high_cached = False
 
+    # Last ~10 bars' volume, most-recent first (D1 = latest trading bar).
+    recent_volumes = [float(v) for v in df["Volume"].tail(10).tolist()[::-1]]
+
     notes = list(failures)
     if status == "match":
         notes.append("Volume contracted then expanded on latest bar.")
@@ -620,6 +624,7 @@ def evaluate_ticker(ticker: str, df: pd.DataFrame, cfg: dict, include_all: bool 
         confirmations_passed=conf_passed if conf_total else None,
         confirmations_total=conf_total if conf_total else None,
         indicators=indicators,
+        recent_volumes=recent_volumes,
         year_high_cached=year_high_cached,
         notes=notes,
     )
@@ -997,6 +1002,7 @@ def build_results_json(results: List[ScreenResult], cfg: dict, duration_seconds:
             "dividend_yield": r.dividend_yield,
             "next_earnings_date": r.next_earnings_date,
             "earnings_in_days": r.earnings_in_days,
+            "recent_volumes": r.recent_volumes,
             "notes": r.notes,
         }
 
