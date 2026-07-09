@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-09T14:46:30Z",
-  "duration_seconds": 135.9,
+  "generated_at": "2026-07-09T15:59:37Z",
+  "duration_seconds": 137.3,
   "mode": "full",
   "criteria": {
-    "max_price": 20.0,
+    "max_price": 1000000,
     "min_price": 0.05,
     "expansion_multiplier": 1.15,
     "near_expansion_ratio": 0.75
