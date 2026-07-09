@@ -18,7 +18,8 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: write   # needed to commit the updated ticker_state.json back to the repo
+  contents: write   # needed to commit ticker_state.json + dashboard data back to the repo
+  issues: write     # needed to open alert issues (phone notifications) on newly-entered setups
 
 jobs:
   intraday_refresh:
@@ -62,12 +63,37 @@ jobs:
           EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
         run: python screener.py --config config.yaml --mode intraday
 
-      - name: Commit updated state file back to repo
+      - name: Open alert issue on newly-entered setups (phone notification)
+        if: steps.market_check.outputs.is_open == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          [ -f alerts.json ] || { echo "No alerts.json -- nothing to notify."; exit 0; }
+          python - << 'EOF'
+          import json
+          d = json.load(open("alerts.json", encoding="utf-8"))
+          ts = d.get("tickers", [])
+          rows = [f"| **{t['ticker']}** | ${t['current_price']} | ${t['expected_low']} - ${t['expected_high']} | ${t['year_low']} - ${t['year_high']} | {t['signals']} |" for t in ts]
+          body = ("An intraday refresh flagged **%d newly-entered setup(s)**:\n\n" % len(ts) +
+                  "| Ticker | Price | Expected range (ATR) | 52-wk range | Signals |\n|---|---|---|---|---|\n" +
+                  "\n".join(rows) +
+                  "\n\n[Open the dashboard](https://dhavalkodrani.github.io/Stock_squeeze_screener/)\n\n*Automated technical screen -- not financial advice. Verify independently.*")
+          open("issue_body.md","w",encoding="utf-8").write(body)
+          open("alert_tickers.txt","w").write(",".join(t["ticker"] for t in ts))
+          EOF
+          TICKERS=$(cat alert_tickers.txt)
+          [ -z "$TICKERS" ] && { echo "No new setups -- no alert."; exit 0; }
+          TITLE="🔔 Intraday alert $(date -u +'%Y-%m-%d %H:%M'): $TICKERS"
+          gh issue create --title "$TITLE" --body-file issue_body.md --assignee "$OWNER"
+
+      - name: Commit updated state + dashboard data back to repo
         if: steps.market_check.outputs.is_open == 'true'
         run: |
           git config user.name "screener-bot"
           git config user.email "actions@github.com"
-          git add ticker_state.json 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "Update ticker state [skip ci]"
+          rm -f alerts.json alert_tickers.txt issue_body.md
+          git add ticker_state.json docs/data/results.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Update state + dashboard data [skip ci]"
           git pull --rebase || true
           git push || echo "Nothing to push"

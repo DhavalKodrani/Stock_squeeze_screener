@@ -5,3 +5,6 @@ screener.log
 config.test.yaml
 .env
 .claude/
+alerts.json
+alert_tickers.txt
+issue_body.md
