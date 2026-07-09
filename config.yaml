@@ -19,8 +19,8 @@ universe:
   max_tickers_per_run: 4000
 
 price_filter:
-  max_price: 20.00         # configurable; raised from $2 to $20 per request
-  min_price: 0.05          # filters out effectively-worthless/delisted junk
+  max_price: 1000000       # effectively no upper cap -- shortlist stocks at any price
+  min_price: 0.05          # filters out effectively-worthless/delisted junk (set to 0 to include sub-nickel)
   min_avg_dollar_volume: 100000   # liquidity floor: avg_volume * price, last 20 days
 
 data:
