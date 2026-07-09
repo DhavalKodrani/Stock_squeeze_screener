@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-08T19:59:06Z",
-  "duration_seconds": 2.9,
+  "generated_at": "2026-07-09T15:49:38Z",
+  "duration_seconds": 3.4,
   "mode": "custom",
   "criteria": {
-    "max_price": 2.0,
+    "max_price": 20.0,
     "min_price": 0.05,
     "expansion_multiplier": 1.15,
     "near_expansion_ratio": 0.75
@@ -11,30 +11,166 @@
   "counts": {
     "match": 0,
     "watch": 0,
-    "none": 1
+    "none": 2
   },
   "results": [
     {
+      "ticker": "AUTL",
+      "status": "none",
+      "current_price": 1.6407,
+      "expected_low": 1.497,
+      "expected_high": 1.7844,
+      "year_high": 2.7,
+      "year_low": 1.175,
+      "bandwidth_percentile": 5.83,
+      "avg_dollar_volume": 1612304.8,
+      "volume_ratio": 0.3499,
+      "expansion_progress": 0.3043,
+      "confirmations_passed": 7,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": true,
+          "value": 53.11,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 0.0107,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 3.19,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": true,
+          "value": 1.6305,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": 1.6052,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 1.707,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": 1.5881,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": true,
+          "value": 58.26,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "dividend_ttm": null,
+      "dividend_yield": null,
+      "next_earnings_date": "2026-08-07",
+      "earnings_in_days": 29,
+      "recent_volumes": [
+        343865.0,
+        1671300.0,
+        755000.0,
+        1039000.0,
+        1442100.0,
+        698700.0,
+        1068000.0,
+        959800.0,
+        771900.0,
+        606600.0
+      ],
+      "notes": [
+        "Volume not near expansion trigger (30% of the way).",
+        "Bollinger band-width at 5.8th percentile of last 120 days.",
+        "Indicator confirmations: 7/8 passed. Failed: ICHIMOKU."
+      ]
+    },
+    {
       "ticker": "DVLT",
       "status": "none",
-      "current_price": null,
-      "expected_low": null,
-      "expected_high": null,
-      "year_high": null,
-      "year_low": null,
-      "bandwidth_percentile": null,
-      "avg_dollar_volume": null,
-      "volume_ratio": null,
-      "expansion_progress": null,
-      "confirmations_passed": null,
-      "confirmations_total": null,
-      "indicators": {},
+      "current_price": 0.3719,
+      "expected_low": 0.319,
+      "expected_high": 0.4248,
+      "year_high": 4.1,
+      "year_low": 0.25,
+      "bandwidth_percentile": 11.67,
+      "avg_dollar_volume": 9072857.93,
+      "volume_ratio": 0.294,
+      "expansion_progress": 0.2556,
+      "confirmations_passed": 3,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": false,
+          "value": 44.33,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 0.0076,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 9.38,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": false,
+          "value": 0.341,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": false,
+          "value": 0.3855,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 0.695,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": false,
+          "value": 0.3846,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": true,
+          "value": 59.87,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
       "dividend_ttm": null,
       "dividend_yield": null,
       "next_earnings_date": "2026-08-13",
-      "earnings_in_days": 36,
+      "earnings_in_days": 35,
+      "recent_volumes": [
+        7171932.0,
+        8107700.0,
+        15383900.0,
+        16048400.0,
+        33794300.0,
+        105608500.0,
+        19413800.0,
+        13673800.0,
+        12730800.0,
+        16115600.0
+      ],
       "notes": [
-        "Analysis failed: ['Open', 'High', 'Low', 'Close', 'Volume']"
+        "No squeeze: band-width at 11.7th percentile (need <= 10).",
+        "10-day MA below 30-day MA (no uptrend).",
+        "Volume not near expansion trigger (26% of the way).",
+        "Only 3/8 indicator confirmations (need 5).",
+        "Bollinger band-width at 11.7th percentile of last 120 days.",
+        "Indicator confirmations: 3/8 passed. Failed: RSI, LSMA, EMA, ICHIMOKU, VWAP."
       ]
     }
   ]
