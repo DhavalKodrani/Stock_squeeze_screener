@@ -1,84 +1,17 @@
 {
-  "generated_at": "2026-07-08T22:34:36Z",
-  "duration_seconds": 317.8,
+  "generated_at": "2026-07-09T08:58:26Z",
+  "duration_seconds": 134.9,
   "mode": "full",
   "criteria": {
-    "max_price": 2.0,
+    "max_price": 20.0,
     "min_price": 0.05,
     "expansion_multiplier": 1.15,
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 1,
+    "match": 0,
     "watch": 0,
     "none": 0
   },
-  "results": [
-    {
-      "ticker": "AUTL",
-      "status": "match",
-      "current_price": 1.7,
-      "expected_low": 1.552,
-      "expected_high": 1.848,
-      "year_high": 2.7,
-      "year_low": 1.175,
-      "bandwidth_percentile": 10.0,
-      "avg_dollar_volume": 1772886.78,
-      "volume_ratio": 1.5834,
-      "expansion_progress": 1.3769,
-      "confirmations_passed": 7,
-      "confirmations_total": 8,
-      "indicators": {
-        "rsi": {
-          "pass": true,
-          "value": 58.26,
-          "desc": "RSI in bullish-but-not-overbought band"
-        },
-        "macd": {
-          "pass": true,
-          "value": 0.0119,
-          "desc": "MACD line above signal line"
-        },
-        "momentum": {
-          "pass": true,
-          "value": 2.41,
-          "desc": "N-day rate of change positive (%)"
-        },
-        "lsma": {
-          "pass": true,
-          "value": 1.6068,
-          "desc": "Price above rising least-squares MA"
-        },
-        "ema": {
-          "pass": true,
-          "value": 1.6017,
-          "desc": "Price above EMA"
-        },
-        "ichimoku": {
-          "pass": false,
-          "value": 1.7225,
-          "desc": "Price above the Ichimoku cloud"
-        },
-        "vwap": {
-          "pass": true,
-          "value": 1.5758,
-          "desc": "Price above rolling VWAP"
-        },
-        "mfi": {
-          "pass": true,
-          "value": 62.63,
-          "desc": "Money Flow Index in bullish band"
-        }
-      },
-      "dividend_ttm": null,
-      "dividend_yield": null,
-      "next_earnings_date": null,
-      "earnings_in_days": null,
-      "notes": [
-        "Volume contracted then expanded on latest bar.",
-        "Bollinger band-width at 10.0th percentile of last 120 days.",
-        "Indicator confirmations: 7/8 passed. Failed: ICHIMOKU."
-      ]
-    }
-  ]
+  "results": []
 }
