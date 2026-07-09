@@ -1,24 +1,18 @@
-name: Daily Stock Squeeze Screener
+name: Daily Stock Squeeze Screener (full scan)
+
+# This is the "daily" stage: scans the FULL under-$20 universe once, near market
+# open, and writes shortlist_cache.json (committed back to the repo) so the
+# separate intraday workflow has something lightweight to re-check all day.
 
 on:
   schedule:
-    # Cron is always in UTC (GitHub can't do DST-aware schedules).
-    # Evening scan: 21:30 UTC, Mon-Fri (~5:30pm US Eastern, after market close).
-    - cron: "30 21 * * 1-5"
-    # Morning scan: 04:00 UTC daily = 5:00am UK during British Summer Time
-    # (4:00am in UK winter -- switch to "0 5 * * *" from late Oct to late Mar
-    # if the exact 5am matters year-round).
-    - cron: "0 4 * * *"
-  workflow_dispatch:      # manual trigger (Actions tab, or the UI's "Refresh Now" / "Analyze My List" buttons)
-    inputs:
-      tickers:
-        description: "Optional comma-separated tickers for a custom analysis (e.g. AAPL,TSLA,PLUG). Leave empty for the full-universe scan."
-        required: false
-        default: ""
+    # 14:00 UTC = 9:00am US Eastern (adjust for your timezone / DST as needed;
+    # cron is always UTC, and GitHub does not auto-adjust for daylight saving).
+    - cron: "0 14 * * 1-5"
+  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab
 
 permissions:
-  contents: write   # needed to commit docs/data/results.json back to the repo
-  issues: write     # needed to open alert issues when matches are found
+  contents: write   # needed to commit the shortlist cache back to the repo
 
 jobs:
   screen:
@@ -37,92 +31,28 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Configure git identity
-        # Needed before "Run screener" (not just after) -- the script itself
-        # commits+pushes docs/data/progress.json periodically while scanning
-        # so the UI can show live progress, since GitHub Actions job logs are
-        # only readable once a job finishes (no way to stream them live).
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Run screener
+      - name: Run full daily screen
         env:
-          # Optional: if any of these aren't set as repo secrets, the screener
-          # just skips emailing and relies on docs/data/results.json / the
-          # GitHub Pages UI instead. It will not fail the run.
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
-          CUSTOM_TICKERS: ${{ github.event.inputs.tickers }}
-        run: |
-          if [ -n "$CUSTOM_TICKERS" ]; then
-            python screener.py --config config.yaml --tickers "$CUSTOM_TICKERS"
-          else
-            python screener.py --config config.yaml
-          fi
+        run: python screener.py --config config.yaml --mode daily
 
-      - name: Open alert issue when matches found (phone notification)
-        # An issue assigned to the owner triggers a GitHub mobile-app push /
-        # email notification with zero SMTP setup. Full scans only -- custom
-        # ticker-list analyses are interactive and don't need alerts.
-        if: github.event.inputs.tickers == ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-          OWNER: ${{ github.repository_owner }}
+      - name: Commit updated cache files back to repo
         run: |
-          python - << 'EOF'
-          import json
-          d = json.load(open("docs/data/results.json", encoding="utf-8"))
-          ms = [r for r in d.get("results", []) if r.get("status") == "match"]
-          lines = []
-          for r in ms:
-              sig = (f"{r['confirmations_passed']}/{r['confirmations_total']}"
-                     if r.get("confirmations_total") else "-")
-              lines.append(
-                  f"| **{r['ticker']}** | ${r['current_price']} | "
-                  f"${r['expected_low']} - ${r['expected_high']} | "
-                  f"${r['year_low']} - ${r['year_high']} | {sig} |")
-          body = (f"The scan at {d.get('generated_at')} found **{len(ms)} TRIGGERED match(es)**:\n\n"
-                  "| Ticker | Price | Expected range (ATR) | 52-wk range | Signals |\n"
-                  "|---|---|---|---|---|\n" + "\n".join(lines) +
-                  "\n\n[Open the dashboard](https://dhavalkodrani.github.io/Stock_squeeze_screener/)"
-                  "\n\n*Automated technical screen -- not financial advice. Verify independently.*")
-          open("issue_body.md", "w", encoding="utf-8").write(body)
-          open("matches.txt", "w").write(",".join(r["ticker"] for r in ms))
-          EOF
-          TICKERS=$(cat matches.txt)
-          if [ -z "$TICKERS" ]; then
-            echo "No matches -- no alert issue."
-            exit 0
-          fi
-          TITLE="🔔 Squeeze alert $(date -u +%Y-%m-%d): $TICKERS"
-          EXISTING=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[].number' | head -1)
-          if [ -n "$EXISTING" ]; then
-            echo "Alert issue #$EXISTING already open for today's matches, skipping."
-          else
-            gh issue create --title "$TITLE" --body-file issue_body.md --assignee "$OWNER"
-          fi
-
-      - name: Commit results for the GitHub Pages UI
-        if: always()
-        run: |
-          git pull --rebase || true   # pick up any progress.json commits screener.py pushed mid-run
-          if [ -n "$(git status --porcelain docs/data/results.json docs/data/custom_results.json)" ]; then
-            git add docs/data/results.json docs/data/custom_results.json
-            git commit -m "Update results ($(date -u +'%Y-%m-%d %H:%M UTC'))"
-            git push
-          else
-            echo "No change to results files, nothing to commit."
-          fi
+          git config user.name "screener-bot"
+          git config user.email "actions@github.com"
+          git add shortlist_cache.json ticker_state.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Update shortlist cache [skip ci]"
+          git push || echo "Nothing to push"
 
       - name: Upload report + logs as build artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: screener-output-${{ github.run_number }}
+          name: daily-screener-output-${{ github.run_number }}
           path: |
             latest_report.html
             screener.log

@@ -4,21 +4,11 @@
 # =============================================================================
 
 universe:
-  # Where to pull the master list of US tickers from, tried in order:
-  #   1. NASDAQ Trader's public symbol directory (free, no API key). In
-  #      practice this host is unreachable from most cloud IP ranges
-  #      (confirmed: fails the same way from GitHub Actions runners as it
-  #      does from some home networks) -- kept as the first attempt in case
-  #      that changes, but don't rely on it.
-  #   2. SEC EDGAR's company_tickers.json -- official, reliable, reachable
-  #      from anywhere, ~10k tickers across all SEC filers. Requires a
-  #      descriptive User-Agent per SEC's fair-access policy; put a real
-  #      contact email in sec_user_agent below.
-  #   3. Local file (fallback_file) as a last resort.
+  # Where to pull the master list of US tickers from.
+  # Primary: NASDAQ Trader's public symbol directory (free, no API key).
+  # Fallback: a local file (tickers_fallback.txt) if the primary source fails.
   nasdaq_listed_url: "https://ftp.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
   other_listed_url: "https://ftp.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt"
-  sec_company_tickers_url: "https://www.sec.gov/files/company_tickers.json"
-  sec_user_agent: "StockSqueezeScreener your-email@example.com"  # SEC requires a real contact
   fallback_file: "tickers_fallback.txt"
   # Exclude test issues, warrants, units, and other non-common-stock symbols
   exclude_test_issues: true
@@ -29,7 +19,7 @@ universe:
   max_tickers_per_run: 4000
 
 price_filter:
-  max_price: 2.00          # "priced under $2"
+  max_price: 20.00         # configurable; raised from $2 to $20 per request
   min_price: 0.05          # filters out effectively-worthless/delisted junk
   min_avg_dollar_volume: 100000   # liquidity floor: avg_volume * price, last 20 days
 
@@ -40,6 +30,25 @@ data:
   batch_size: 50            # tickers per yfinance download batch
   max_retries: 3
   retry_backoff_seconds: 5
+
+# Intraday / live-market settings -- only used when run_mode: "intraday"
+intraday:
+  interval: "5m"             # yfinance intraday granularity: "5m", "15m", "1h"
+  lookback_period: "5d"      # yfinance limits 5m bars to the last 60 days; 5d is plenty for our indicators
+  min_bars_required: 40      # minimum intraday bars needed before evaluating (safety floor)
+
+# Two-stage run mode:
+#   "daily"    -> full-universe scan on daily bars (run once, e.g. at/near market open),
+#                 writes the shortlist + each ticker's 52wk high/low to cache.
+#   "intraday" -> re-checks ONLY the cached shortlist using 5-min bars (run every 5-15 min
+#                 during market hours). Reuses cached 52wk hi/lo instead of re-fetching 1y history.
+run_mode: "daily"
+
+cache:
+  enabled: true
+  shortlist_file: "shortlist_cache.json"   # tickers + 52wk hi/lo from the last daily scan
+  state_file: "ticker_state.json"          # which tickers currently match, for change detection
+  max_cache_age_hours: 20                  # daily cache considered stale after this long
 
 bollinger:
   period: 20
@@ -62,13 +71,6 @@ volume:
   contraction_ratio_max: 0.85   # short_avg / long_avg <= this at some point in lookback = contraction happened
   expansion_multiplier: 1.15    # latest volume >= long_avg * this = expansion happening now
   require_volume_confirmation: true
-  # Watchlist tier: tickers that pass the squeeze/trend filters and have contracted
-  # volume, but haven't hit the expansion_multiplier trigger yet. Included in
-  # results.json (for the UI) with status "watch" as long as
-  # (latest_volume / long_avg) / expansion_multiplier >= this ratio.
-  # The UI has its own slider to filter within this band further, so keep this
-  # loose (a lower number = more candidates saved to results.json).
-  near_expansion_ratio: 0.75
 
 projection:
   # "Expected low/high range" is a heuristic technical projection based on
@@ -76,61 +78,7 @@ projection:
   atr_period: 14
   atr_multiplier: 1.5
 
-enrichment:
-  # Extra per-result info fetched only for tickers that made the report
-  # (never the whole universe): trailing-12-month dividend and the next
-  # earnings report date. "Near" earnings get flagged in the notes.
-  enabled: true
-  earnings_near_days: 14   # flag "result nearby" when earnings within this many days
-  max_tickers: 100         # safety cap on extra lookups per run
-
-confirmations:
-  # Secondary indicator votes, applied only to tickers that already passed
-  # the core filters (price cap, Bollinger squeeze, SMA trend, volume
-  # contraction/expansion). Each enabled indicator casts one bullish yes/no
-  # vote; a ticker needs at least min_required votes to make the report.
-  # Every vote (pass/fail + value) is saved to results.json so the UI can
-  # show why a ticker qualified. Disable any indicator with enabled: false.
-  min_required: 5
-
-  rsi:                    # Relative Strength Index
-    enabled: true
-    period: 14
-    min: 50               # bullish side of the range...
-    max: 75               # ...but not already overbought
-  macd:                   # MACD line above its signal line
-    enabled: true
-    fast: 12
-    slow: 26
-    signal: 9
-  momentum:               # N-day rate of change must be positive
-    enabled: true
-    period: 10
-  lsma:                   # price above a rising least-squares (linear regression) MA
-    enabled: true
-    period: 25
-  ema:                    # price above the exponential MA
-    enabled: true
-    period: 21
-  ichimoku:               # price above the Ichimoku cloud (span A/B)
-    enabled: true
-    conversion: 9
-    base: 26
-    span_b: 52
-  vwap:                   # price above rolling volume-weighted average price
-    enabled: true
-    period: 20
-  mfi:                    # Money Flow Index (volume-weighted RSI), bullish band
-    enabled: true
-    period: 14
-    min: 50
-    max: 85
-
 email:
-  # Email is entirely optional. If any of the 5 secrets below aren't set as
-  # environment variables (e.g. you haven't added them as GitHub Actions
-  # secrets), the screener just skips sending mail and logs a note -- it will
-  # NOT fail the run. The results.json / GitHub Pages UI works either way.
   subject_prefix: "[Stock Squeeze Screener]"
   smtp_server_env: "SMTP_SERVER"        # e.g. smtp.gmail.com
   smtp_port_env: "SMTP_PORT"            # e.g. 587
@@ -138,25 +86,7 @@ email:
   sender_password_env: "EMAIL_PASSWORD" # use an app password, not your real password
   recipient_email_env: "EMAIL_RECIPIENT"
   send_email_if_no_hits: false          # if true, sends a "no matches today" email too
-
-output:
-  # Written on every run (dry-run or not) so the GitHub Pages UI always has
-  # something fresh to load, independent of whether email is configured.
-  results_json_path: "docs/data/results.json"
-  html_report_path: "latest_report.html"
-  # On-demand custom ticker-list analyses (the UI's "Analyze My List" box /
-  # --tickers CLI flag) write here so the daily full-scan results.json is
-  # never overwritten by a custom run.
-  custom_results_json_path: "docs/data/custom_results.json"
-  # Live scan progress for the UI's "Refresh Now" view. GitHub Actions job
-  # logs are only readable once a job *finishes* (confirmed: the live-log
-  # blob 404s while a job is still running), so there's no way to stream
-  # progress from the log. Instead the script itself commits+pushes this
-  # small file periodically while scanning, and the UI polls it via the
-  # Contents API. Only used when running inside a git repo (skipped locally
-  # with --dry-run if git isn't set up / push fails -- non-fatal either way).
-  progress_json_path: "docs/data/progress.json"
-  progress_commit_min_interval_seconds: 20
+  email_on_changes_only: true           # intraday mode: only email when a ticker newly enters/exits the setup
 
 logging:
   level: "INFO"

@@ -1,0 +1,73 @@
+name: Intraday Live-Market Refresh
+
+# This is the "intraday" stage: re-checks ONLY the tickers cached by the daily
+# full-scan workflow, using 5-minute bars, roughly every 5 minutes while the
+# US market is open. Emails only when a ticker newly enters/exits the setup.
+#
+# NOTE on schedule accuracy: GitHub's cron scheduler is best-effort, not exact —
+# on a busy queue, a "every 5 minutes" job can occasionally run a few minutes
+# late. This is a GitHub platform limitation, not something the workflow
+# config can fully eliminate.
+
+on:
+  schedule:
+    # Every 5 minutes, but only Mon-Fri. We additionally check market hours
+    # inside the "Check market hours" step below and skip the run if closed,
+    # since cron alone can't express "only 9:30am-4:00pm ET".
+    - cron: "*/5 * * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write   # needed to commit the updated ticker_state.json back to the repo
+
+jobs:
+  intraday_refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check US market hours (9:30am-4:00pm ET, Mon-Fri)
+        id: market_check
+        run: |
+          # Convert current UTC time to US/Eastern and check if within market hours.
+          # This does NOT account for market holidays -- add a holiday check if needed.
+          HOUR_MIN=$(TZ="America/New_York" date +%H%M)
+          DOW=$(TZ="America/New_York" date +%u)  # 1=Mon .. 7=Sun
+          if [ "$DOW" -ge 1 ] && [ "$DOW" -le 5 ] && [ "$HOUR_MIN" -ge 0930 ] && [ "$HOUR_MIN" -le 1600 ]; then
+            echo "is_open=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_open=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Python
+        if: steps.market_check.outputs.is_open == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        if: steps.market_check.outputs.is_open == 'true'
+        run: pip install -r requirements.txt
+
+      - name: Run intraday refresh
+        if: steps.market_check.outputs.is_open == 'true'
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+        run: python screener.py --config config.yaml --mode intraday
+
+      - name: Commit updated state file back to repo
+        if: steps.market_check.outputs.is_open == 'true'
+        run: |
+          git config user.name "screener-bot"
+          git config user.email "actions@github.com"
+          git add ticker_state.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Update ticker state [skip ci]"
+          git pull --rebase || true
+          git push || echo "Nothing to push"
