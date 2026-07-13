@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T15:38:33Z",
+  "generated_at": "2026-07-13T15:48:45Z",
   "duration_seconds": 3.3,
   "mode": "custom",
   "criteria": {
@@ -17,41 +17,41 @@
     {
       "ticker": "VEEE",
       "status": "none",
-      "current_price": 20.9499,
-      "expected_low": 17.347,
-      "expected_high": 24.5528,
+      "current_price": 21.13,
+      "expected_low": 17.5271,
+      "expected_high": 24.7329,
       "year_high": 128.02,
       "year_low": 4.16,
       "bandwidth_percentile": 100.0,
-      "avg_dollar_volume": 51061809.54,
-      "volume_ratio": 18.2648,
-      "expansion_progress": 15.8825,
+      "avg_dollar_volume": 53059114.07,
+      "volume_ratio": 18.3158,
+      "expansion_progress": 15.9268,
       "confirmations_passed": 6,
       "confirmations_total": 8,
       "indicators": {
         "rsi": {
           "pass": false,
-          "value": 87.22,
+          "value": 87.33,
           "desc": "RSI in bullish-but-not-overbought band"
         },
         "macd": {
           "pass": true,
-          "value": 1.045,
+          "value": 1.0565,
           "desc": "MACD line above signal line"
         },
         "momentum": {
           "pass": true,
-          "value": 344.8,
+          "value": 348.62,
           "desc": "N-day rate of change positive (%)"
         },
         "lsma": {
           "pass": true,
-          "value": 7.1369,
+          "value": 7.1641,
           "desc": "Price above rising least-squares MA"
         },
         "ema": {
           "pass": true,
-          "value": 6.806,
+          "value": 6.8224,
           "desc": "Price above EMA"
         },
         "ichimoku": {
@@ -61,12 +61,12 @@
         },
         "vwap": {
           "pass": true,
-          "value": 18.7756,
+          "value": 18.8685,
           "desc": "Price above rolling VWAP"
         },
         "mfi": {
           "pass": false,
-          "value": 98.83,
+          "value": 98.87,
           "desc": "Money Flow Index in bullish band"
         }
       },
@@ -75,7 +75,7 @@
       "next_earnings_date": "2026-08-06",
       "earnings_in_days": 24,
       "recent_volumes": [
-        44517391.0,
+        45992396.0,
         165300.0,
         142800.0,
         1834200.0,
@@ -95,41 +95,41 @@
     {
       "ticker": "AMIX",
       "status": "none",
-      "current_price": 6.36,
-      "expected_low": 5.4429,
-      "expected_high": 7.2771,
+      "current_price": 6.42,
+      "expected_low": 5.5029,
+      "expected_high": 7.3371,
       "year_high": 55.44,
       "year_low": 4.2,
       "bandwidth_percentile": 93.33,
-      "avg_dollar_volume": 975800.19,
-      "volume_ratio": 17.6114,
-      "expansion_progress": 15.3142,
+      "avg_dollar_volume": 986077.99,
+      "volume_ratio": 17.6139,
+      "expansion_progress": 15.3165,
       "confirmations_passed": 2,
       "confirmations_total": 8,
       "indicators": {
         "rsi": {
           "pass": false,
-          "value": 40.53,
+          "value": 41.15,
           "desc": "RSI in bullish-but-not-overbought band"
         },
         "macd": {
           "pass": false,
-          "value": -0.0154,
+          "value": -0.0116,
           "desc": "MACD line above signal line"
         },
         "momentum": {
           "pass": true,
-          "value": 11.19,
+          "value": 12.24,
           "desc": "N-day rate of change positive (%)"
         },
         "lsma": {
           "pass": false,
-          "value": 5.9635,
+          "value": 5.9725,
           "desc": "Price above rising least-squares MA"
         },
         "ema": {
           "pass": false,
-          "value": 6.9275,
+          "value": 6.9329,
           "desc": "Price above EMA"
         },
         "ichimoku": {
@@ -139,12 +139,12 @@
         },
         "vwap": {
           "pass": true,
-          "value": 6.282,
+          "value": 6.2995,
           "desc": "Price above rolling VWAP"
         },
         "mfi": {
           "pass": false,
-          "value": 2.08,
+          "value": 2.07,
           "desc": "Money Flow Index in bullish band"
         }
       },
@@ -153,7 +153,7 @@
       "next_earnings_date": null,
       "earnings_in_days": null,
       "recent_volumes": [
-        2702069.0,
+        2705409.0,
         11600.0,
         8100.0,
         3500.0,
@@ -176,41 +176,41 @@
     {
       "ticker": "APLD",
       "status": "none",
-      "current_price": 29.74,
-      "expected_low": 25.0252,
-      "expected_high": 34.4548,
+      "current_price": 29.45,
+      "expected_low": 24.709,
+      "expected_high": 34.191,
       "year_high": 50.725,
       "year_low": 9.235,
       "bandwidth_percentile": 96.67,
-      "avg_dollar_volume": 560762610.29,
-      "volume_ratio": 0.2903,
-      "expansion_progress": 0.2524,
+      "avg_dollar_volume": 555852912.94,
+      "volume_ratio": 0.3101,
+      "expansion_progress": 0.2696,
       "confirmations_passed": 0,
       "confirmations_total": 8,
       "indicators": {
         "rsi": {
           "pass": false,
-          "value": 30.77,
+          "value": 30.37,
           "desc": "RSI in bullish-but-not-overbought band"
         },
         "macd": {
           "pass": false,
-          "value": -1.0571,
+          "value": -1.0756,
           "desc": "MACD line above signal line"
         },
         "momentum": {
           "pass": false,
-          "value": -24.06,
+          "value": -24.8,
           "desc": "N-day rate of change positive (%)"
         },
         "lsma": {
           "pass": false,
-          "value": 32.0929,
+          "value": 32.0492,
           "desc": "Price above rising least-squares MA"
         },
         "ema": {
           "pass": false,
-          "value": 36.6613,
+          "value": 36.635,
           "desc": "Price above EMA"
         },
         "ichimoku": {
@@ -220,12 +220,12 @@
         },
         "vwap": {
           "pass": false,
-          "value": 39.5438,
+          "value": 39.5316,
           "desc": "Price above rolling VWAP"
         },
         "mfi": {
           "pass": false,
-          "value": 10.75,
+          "value": 10.74,
           "desc": "Money Flow Index in bullish band"
         }
       },
@@ -234,7 +234,7 @@
       "next_earnings_date": "2026-07-29",
       "earnings_in_days": 16,
       "recent_volumes": [
-        5473230.0,
+        5852435.0,
         12337600.0,
         16552400.0,
         18267400.0,
@@ -249,7 +249,7 @@
         "No squeeze: band-width at 96.7th percentile (need <= 10).",
         "Price below 10-day MA (no uptrend).",
         "10-day MA below 30-day MA (no uptrend).",
-        "Volume not near expansion trigger (25% of the way).",
+        "Volume not near expansion trigger (27% of the way).",
         "Only 0/8 indicator confirmations (need 5).",
         "Bollinger band-width at 96.7th percentile of last 120 days.",
         "Indicator confirmations: 0/8 passed. Failed: RSI, MACD, MOMENTUM, LSMA, EMA, ICHIMOKU, VWAP, MFI."
@@ -258,41 +258,41 @@
     {
       "ticker": "DVLT",
       "status": "none",
-      "current_price": 0.3731,
-      "expected_low": 0.3197,
-      "expected_high": 0.4265,
+      "current_price": 0.3698,
+      "expected_low": 0.3164,
+      "expected_high": 0.4232,
       "year_high": 4.1,
       "year_low": 0.25,
       "bandwidth_percentile": 11.67,
-      "avg_dollar_volume": 8593400.57,
-      "volume_ratio": 0.2059,
-      "expansion_progress": 0.179,
+      "avg_dollar_volume": 8519421.52,
+      "volume_ratio": 0.2106,
+      "expansion_progress": 0.1831,
       "confirmations_passed": 3,
       "confirmations_total": 8,
       "indicators": {
         "rsi": {
           "pass": false,
-          "value": 45.42,
+          "value": 44.75,
           "desc": "RSI in bullish-but-not-overbought band"
         },
         "macd": {
           "pass": true,
-          "value": 0.0079,
+          "value": 0.0077,
           "desc": "MACD line above signal line"
         },
         "momentum": {
           "pass": true,
-          "value": 13.06,
+          "value": 12.06,
           "desc": "N-day rate of change positive (%)"
         },
         "lsma": {
           "pass": false,
-          "value": 0.3515,
+          "value": 0.351,
           "desc": "Price above rising least-squares MA"
         },
         "ema": {
           "pass": false,
-          "value": 0.3829,
+          "value": 0.3826,
           "desc": "Price above EMA"
         },
         "ichimoku": {
@@ -307,7 +307,7 @@
         },
         "mfi": {
           "pass": true,
-          "value": 58.03,
+          "value": 56.2,
           "desc": "Money Flow Index in bullish band"
         }
       },
@@ -316,7 +316,7 @@
       "next_earnings_date": "2026-08-13",
       "earnings_in_days": 31,
       "recent_volumes": [
-        4742035.0,
+        4851728.0,
         8064100.0,
         11965100.0,
         8296000.0,
