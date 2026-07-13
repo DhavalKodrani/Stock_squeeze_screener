@@ -271,8 +271,15 @@ function resetScanPanel(message) {
   el("scan-progress-panel").style.display = "block";
   el("scan-current-ticker").textContent = "–";
   el("scan-counts").textContent = message;
-  el("scan-ticker-grid").innerHTML = "";
-  scanGrid = { tickers: null, nodes: [] };
+  // Keep the full ticker list visible at all times: instead of clearing the
+  // grid while a new run initializes, repaint every chip white (pending).
+  // When the new run's first progress lands, the real statuses take over
+  // (and a different ticker list rebuilds the grid automatically).
+  if (scanGrid.nodes && scanGrid.nodes.length) {
+    for (const n of scanGrid.nodes) {
+      if (n.className !== "scan-chip scan-pending") n.className = "scan-chip scan-pending";
+    }
+  }
 }
 
 function ensureScanGridBuilt(tickers) {
@@ -594,3 +601,17 @@ el("btn-clear-token").addEventListener("click", () => {
 
 // Initial load: no token needed, just show whatever the last run produced.
 loadSavedResults(false).catch((err) => setStatus(err.message || String(err), "error"));
+
+// Always show the full ticker grid: load the last scan's final state (from
+// the static progress.json, no token needed) so the color-coded list is
+// visible before and after scans, not just while one is running.
+(async () => {
+  try {
+    const res = await fetch(`data/progress.json?_=${Date.now()}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data && data.total) renderScanProgress(data);
+  } catch (err) {
+    // No progress file yet -- panel stays hidden until the first scan.
+  }
+})();
