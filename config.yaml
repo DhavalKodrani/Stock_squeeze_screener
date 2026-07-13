@@ -4,11 +4,16 @@
 # =============================================================================
 
 universe:
-  # Where to pull the master list of US tickers from.
-  # Primary: NASDAQ Trader's public symbol directory (free, no API key).
-  # Fallback: a local file (tickers_fallback.txt) if the primary source fails.
+  # Where to pull the master list of US tickers from, tried in order:
+  #   1. NASDAQ Trader symbol directory -- unreachable from cloud runners in
+  #      practice (times out), kept as first attempt in case that changes.
+  #   2. SEC EDGAR company_tickers.json -- reliable everywhere, ~11k tickers.
+  #      Requires a descriptive User-Agent per SEC fair-access policy.
+  #   3. Local file (fallback_file) as a last resort.
   nasdaq_listed_url: "https://ftp.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
   other_listed_url: "https://ftp.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt"
+  sec_company_tickers_url: "https://www.sec.gov/files/company_tickers.json"
+  sec_user_agent: "StockSqueezeScreener dhavalmountlaurel@gmail.com"
   fallback_file: "tickers_fallback.txt"
   # Exclude test issues, warrants, units, and other non-common-stock symbols
   exclude_test_issues: true
