@@ -13,14 +13,13 @@ universe:
   # Exclude test issues, warrants, units, and other non-common-stock symbols
   exclude_test_issues: true
   exclude_symbols_with_chars: [".", "$", "+", "^", "="]   # typically warrants/rights/units
-  # Safety cap on how many tickers to actually download OHLCV for in one run
-  # (protects against rate limits / long run times). Set higher once you've
-  # tested the pipeline.
-  max_tickers_per_run: 4000
+  # Safety cap on how many tickers to actually download OHLCV for in one run.
+  # Set above the full universe size (~11k) so ALL tickers are scanned.
+  max_tickers_per_run: 20000
 
 price_filter:
   max_price: 1000000       # effectively no upper cap -- shortlist stocks at any price
-  min_price: 0.05          # filters out effectively-worthless/delisted junk (set to 0 to include sub-nickel)
+  min_price: 1.00          # only stocks trading above $1
   min_avg_dollar_volume: 100000   # liquidity floor: avg_volume * price, last 20 days
 
 data:
@@ -71,6 +70,22 @@ volume:
   contraction_ratio_max: 0.85   # short_avg / long_avg <= this at some point in lookback = contraction happened
   expansion_multiplier: 1.15    # latest volume >= long_avg * this = expansion happening now
   require_volume_confirmation: true
+  # Volume spike: the latest bar's volume must be at least spike_multiplier x
+  # the PREVIOUS day's volume, OR spike_multiplier x the average of the prior
+  # spike_compare_days days. The measured ratios always appear in Notes.
+  # Applied to daily scans only (meaningless on 5-minute intraday bars).
+  require_volume_spike: true
+  spike_multiplier: 2.0
+  spike_compare_days: 3
+
+rsi_rise:
+  # RSI must have RISEN by at least min_rise points over the last
+  # lookback_days trading days. The measured rise always appears in Notes.
+  # Applied to daily scans only.
+  required: true
+  period: 14
+  lookback_days: 5
+  min_rise: 10
 
 projection:
   # "Expected low/high range" is a heuristic technical projection based on

@@ -23,7 +23,7 @@ permissions:
 jobs:
   screen:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60   # full universe is ~11k tickers now (was capped at 4k)
 
     steps:
       - name: Check out repository

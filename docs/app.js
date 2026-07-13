@@ -167,11 +167,18 @@ function renderTable() {
       ? `${fmtMoney(r.year_low)} &ndash; ${fmtMoney(r.year_high)}`
       : "&ndash;";
 
-    // Last-10-bars volume, stacked D1 (latest) .. Dn.
+    // Last-10-bars volume, stacked D1 (latest) .. Dn. A day renders green
+    // when its volume is HIGHER than the day before it (the next entry in
+    // the list, since it's most-recent-first), so spike days stand out.
     let vol10Html = "&ndash;";
     if (r.recent_volumes && r.recent_volumes.length) {
-      vol10Html = r.recent_volumes
-        .map((v, i) => `<span class="vd">D${i + 1}:</span> ${fmtVolume(v)}`)
+      const vols = r.recent_volumes;
+      vol10Html = vols
+        .map((v, i) => {
+          const up = i + 1 < vols.length && v != null && vols[i + 1] != null && v > vols[i + 1];
+          const line = `<span class="vd">D${i + 1}:</span> ${fmtVolume(v)}`;
+          return up ? `<span class="vol-up">${line}</span>` : line;
+        })
         .join("<br>");
     }
 

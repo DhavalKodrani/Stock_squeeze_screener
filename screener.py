@@ -557,6 +557,54 @@ def evaluate_ticker(ticker: str, df: pd.DataFrame, cfg: dict, include_all: bool 
             failures.append(f"Volume not near expansion trigger ({(expansion_progress or 0) * 100:.0f}% of the way).")
         status = "none"
 
+    # --- Volume spike + RSI rise (daily scans only -- both are day-over-day
+    # concepts that make no sense on 5-minute intraday bars, where
+    # min_rows_override is set) ---
+    extra_notes: List[str] = []
+    if min_rows_override is None:
+        # Volume spike: latest >= Nx yesterday OR Nx the prior-3-day average.
+        sp_mult = vol_cfg.get("spike_multiplier", 2.0)
+        sp_days = vol_cfg.get("spike_compare_days", 3)
+        prev_vol = float(df["Volume"].iloc[-2]) if len(df) >= 2 else 0.0
+        prior_avg = float(df["Volume"].iloc[-(sp_days + 1):-1].mean()) if len(df) >= sp_days + 1 else 0.0
+        spike_vs_prev = (latest_volume / prev_vol) if prev_vol > 0 else None
+        spike_vs_avg = (latest_volume / prior_avg) if prior_avg > 0 else None
+        spike_ok = ((spike_vs_prev is not None and spike_vs_prev >= sp_mult)
+                    or (spike_vs_avg is not None and spike_vs_avg >= sp_mult))
+        extra_notes.append(
+            f"Volume spike: {spike_vs_prev:.2f}x yesterday, {spike_vs_avg:.2f}x prior {sp_days}-day avg "
+            f"(need >= {sp_mult:g}x either)." if spike_vs_prev is not None and spike_vs_avg is not None
+            else "Volume spike: not enough volume history to measure.")
+        if vol_cfg.get("require_volume_spike", False) and not spike_ok:
+            if not include_all:
+                return None
+            failures.append(f"No volume spike (need >= {sp_mult:g}x yesterday or the {sp_days}-day avg).")
+
+        # RSI rise: RSI now vs N days ago.
+        rr_cfg = cfg.get("rsi_rise", {})
+        rr_period = rr_cfg.get("period", 14)
+        rr_lookback = rr_cfg.get("lookback_days", 5)
+        rr_min = rr_cfg.get("min_rise", 10)
+        delta = df["Close"].diff()
+        gain = delta.clip(lower=0).ewm(alpha=1 / rr_period, adjust=False).mean()
+        loss = (-delta.clip(upper=0)).ewm(alpha=1 / rr_period, adjust=False).mean()
+        rsi_series = 100 - 100 / (1 + gain / loss.replace(0, np.nan))
+        if len(rsi_series.dropna()) > rr_lookback:
+            rsi_now = float(rsi_series.iloc[-1])
+            rsi_then = float(rsi_series.iloc[-1 - rr_lookback])
+            rsi_change = rsi_now - rsi_then
+            extra_notes.append(
+                f"RSI change: {rsi_change:+.1f} over last {rr_lookback} days "
+                f"({rsi_then:.1f} -> {rsi_now:.1f}; need >= +{rr_min:g}).")
+            if rr_cfg.get("required", False) and rsi_change < rr_min:
+                if not include_all:
+                    return None
+                failures.append(f"RSI rose only {rsi_change:+.1f} over {rr_lookback} days (need >= +{rr_min:g}).")
+        else:
+            extra_notes.append("RSI change: not enough history to measure.")
+            if rr_cfg.get("required", False) and not include_all:
+                return None
+
     # --- Confirmation indicators (RSI, MACD, Momentum, LSMA, EMA, Ichimoku,
     # VWAP, MFI) -- each enabled one casts a bullish yes/no vote ---
     conf_passed, conf_total, indicators = evaluate_confirmations(df, cfg)
@@ -595,7 +643,7 @@ def evaluate_ticker(ticker: str, df: pd.DataFrame, cfg: dict, include_all: bool 
     # Last ~10 bars' volume, most-recent first (D1 = latest trading bar).
     recent_volumes = [float(v) for v in df["Volume"].tail(10).tolist()[::-1]]
 
-    notes = list(failures)
+    notes = list(failures) + extra_notes
     if status == "match":
         notes.append("Volume contracted then expanded on latest bar.")
     elif status == "watch":
