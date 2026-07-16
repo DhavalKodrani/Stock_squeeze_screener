@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-16T21:16:47Z",
-  "duration_seconds": 1193.0,
+  "generated_at": "2026-07-16T21:44:43Z",
+  "duration_seconds": 970.3,
   "mode": "full",
   "criteria": {
     "max_price": 1000000,
@@ -9,92 +9,11 @@
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 3,
+    "match": 2,
     "watch": 0,
     "none": 0
   },
   "results": [
-    {
-      "ticker": "SMA",
-      "status": "match",
-      "current_price": 35.0,
-      "expected_low": 33.7196,
-      "expected_high": 36.2804,
-      "year_high": 38.1714,
-      "year_low": 28.9159,
-      "bandwidth_percentile": 7.5,
-      "avg_dollar_volume": 25198703.25,
-      "volume_ratio": 2.6194,
-      "expansion_progress": 2.2777,
-      "confirmations_passed": 8,
-      "confirmations_total": 8,
-      "indicators": {
-        "rsi": {
-          "pass": true,
-          "value": 70.87,
-          "desc": "RSI in bullish-but-not-overbought band"
-        },
-        "macd": {
-          "pass": true,
-          "value": 0.0977,
-          "desc": "MACD line above signal line"
-        },
-        "momentum": {
-          "pass": true,
-          "value": 5.17,
-          "desc": "N-day rate of change positive (%)"
-        },
-        "lsma": {
-          "pass": true,
-          "value": 33.4651,
-          "desc": "Price above rising least-squares MA"
-        },
-        "ema": {
-          "pass": true,
-          "value": 32.8615,
-          "desc": "Price above EMA"
-        },
-        "ichimoku": {
-          "pass": true,
-          "value": 31.3117,
-          "desc": "Price above the Ichimoku cloud"
-        },
-        "vwap": {
-          "pass": true,
-          "value": 32.9966,
-          "desc": "Price above rolling VWAP"
-        },
-        "mfi": {
-          "pass": true,
-          "value": 63.58,
-          "desc": "Money Flow Index in bullish band"
-        }
-      },
-      "dividend_ttm": 1.603,
-      "dividend_yield": 4.58,
-      "next_earnings_date": null,
-      "earnings_in_days": null,
-      "recent_volumes": [
-        1885859.0,
-        430000.0,
-        313200.0,
-        343400.0,
-        278900.0,
-        353500.0,
-        881500.0,
-        518100.0,
-        485500.0,
-        882400.0
-      ],
-      "notes": [
-        "Volume spike: 4.39x yesterday, 5.21x prior 3-day avg (need >= 2x either).",
-        "RSI change: +18.4 over last 5 days (52.5 -> 70.9; need >= +10).",
-        "Volume contracted then expanded on latest bar.",
-        "Bollinger band-width at 7.5th percentile of last 120 days.",
-        "Indicator confirmations: 8/8 passed.",
-        "Pays a dividend: $1.6030/share over the last 12 months (4.58% yield)."
-      ]
-    },
     {
       "ticker": "MNTK",
       "status": "match",
@@ -231,8 +150,8 @@
           "desc": "Money Flow Index in bullish band"
         }
       },
-      "dividend_ttm": 2.88,
-      "dividend_yield": 1.26,
+      "dividend_ttm": null,
+      "dividend_yield": null,
       "next_earnings_date": null,
       "earnings_in_days": null,
       "recent_volumes": [
@@ -252,8 +171,7 @@
         "RSI change: +13.9 over last 5 days (49.9 -> 63.9; need >= +10).",
         "Volume contracted then expanded on latest bar.",
         "Bollinger band-width at 4.2th percentile of last 120 days.",
-        "Indicator confirmations: 7/8 passed. Failed: MACD.",
-        "Pays a dividend: $2.8800/share over the last 12 months (1.26% yield)."
+        "Indicator confirmations: 7/8 passed. Failed: MACD."
       ]
     }
   ]
