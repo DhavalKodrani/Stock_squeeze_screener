@@ -1,9 +1,17 @@
 {
-  "timestamp": "2026-07-16T15:42:59.287422",
+  "timestamp": "2026-07-16T21:16:47.924646",
   "tickers": {
+    "IEX": {
+      "year_high": 229.4292,
+      "year_low": 154.9467
+    },
     "MNTK": {
       "year_high": 2.57,
       "year_low": 1.07
+    },
+    "SMA": {
+      "year_high": 38.1714,
+      "year_low": 28.9159
     }
   }
 }
