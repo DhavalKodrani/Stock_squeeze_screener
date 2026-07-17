@@ -161,7 +161,7 @@
   .tabs { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
   .tab { padding: 7px 16px; border-radius: 7px; background: var(--btn-bg); border: 1px solid var(--border); }
   .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
-  #history-date { padding: 7px 10px; border-radius: 7px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-family: inherit; font-size: 13px; }
+  td.row-date { font-family: monospace; font-size: 12px; color: var(--muted); }
 
   .signals { font-weight: 700; cursor: help; border-bottom: 1px dotted var(--muted); }
   .signals.sig-all { color: var(--green); }
@@ -215,11 +215,45 @@
     .controls .group { min-width: 0; align-items: stretch !important; margin-left: 0 !important; }
     input[type=range] { width: 100%; }
     button { padding: 10px 12px; }
-    table { font-size: 12px; }
-    th, td { padding: 6px 6px; }
-    td.notes { min-width: 180px; max-width: 240px; }
     #scan-ticker-grid { grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); max-height: 220px !important; }
     .modal { width: 95%; padding: 14px; }
+
+    /* Results table becomes stacked cards: one card per stock, labeled
+       fields, no horizontal scrolling at all. Desktop keeps the table. */
+    #results-table thead { display: none; }
+    #results-table, #results-table tbody, #results-table tr, #results-table td { display: block; width: 100%; }
+    #results-table tr {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--chip-bg);
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }
+    #results-table td {
+      border: none;
+      padding: 3px 0;
+      white-space: normal;
+      font-size: 13px;
+    }
+    #results-table td::before {
+      content: attr(data-label);
+      display: inline-block;
+      width: 108px;
+      color: var(--muted);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      vertical-align: top;
+    }
+    #results-table td.ticker { font-size: 18px; padding-bottom: 6px; }
+    #results-table td.ticker::before { content: none; }
+    #results-table td.notes { max-width: none; min-width: 0; }
+    #results-table td.notes::before { display: block; width: auto; margin-bottom: 2px; }
+    #results-table td.vol10 { white-space: normal; }
+    #results-table td.vol10::before { display: block; width: auto; margin-bottom: 2px; }
+    #results-table td.vol10 br { display: none; }
+    #results-table td.vol10 .vd { margin-left: 8px; }
+    .progress-cell { display: inline-flex; }
   }
 </style>
 </head>
@@ -290,15 +324,12 @@
     <div class="tabs">
       <button class="tab active" id="tab-current">Current</button>
       <button class="tab" id="tab-history">History (back-test)</button>
-      <span id="history-controls" style="display:none; align-items:center; gap:8px;">
-        <label for="history-date" class="meta">Scan date:</label>
-        <select id="history-date"></select>
-      </span>
     </div>
     <table id="results-table">
       <thead>
         <tr>
           <th class="sortable" data-key="ticker">Ticker</th>
+          <th class="sortable" data-key="scan_date" title="Which scan produced this row (History tab shows all days)">Date</th>
           <th class="sortable" data-key="status">Status</th>
           <th class="sortable" data-key="current_price">Price</th>
           <th class="sortable" data-key="expected_low">Expected Range (ATR)</th>

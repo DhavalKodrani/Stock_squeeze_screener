@@ -28,6 +28,7 @@ function sortValue(r, key) {
   if (key === "ticker") return r.ticker || "";
   if (key === "status") return STATUS_ORDER[r.status] ?? 3;
   if (key === "latest_volume") return (r.recent_volumes && r.recent_volumes.length) ? r.recent_volumes[0] : null;
+  if (key === "scan_date") return r.scan_date || (latestData.generated_at || "").slice(0, 10);
   return r[key]; // numeric fields; may be null/undefined
 }
 
@@ -184,23 +185,25 @@ function renderTable() {
     }
 
     const tvUrl = TRADINGVIEW_BASE + encodeURIComponent(r.ticker) + "/";
+    const rowDate = r.scan_date || (latestData.generated_at || "").slice(0, 10) || "&ndash;";
 
     tr.innerHTML = `
-      <td class="ticker"><a href="${tvUrl}" target="_blank" rel="noopener" title="Open ${r.ticker} on TradingView">${r.ticker}</a></td>
-      <td><span class="badge ${r.status}">${badgeLabel}</span></td>
-      <td>${fmtMoney(r.current_price)}</td>
-      <td>${r.expected_low != null ? `${fmtMoney(r.expected_low)} &ndash; ${fmtMoney(r.expected_high)}` : "&ndash;"}</td>
-      <td>${rangeHtml}</td>
-      <td>
+      <td class="ticker" data-label="Ticker"><a href="${tvUrl}" target="_blank" rel="noopener" title="Open ${r.ticker} on TradingView">${r.ticker}</a></td>
+      <td class="row-date" data-label="Date">${rowDate}</td>
+      <td data-label="Status"><span class="badge ${r.status}">${badgeLabel}</span></td>
+      <td data-label="Price">${fmtMoney(r.current_price)}</td>
+      <td data-label="Expected (ATR)">${r.expected_low != null ? `${fmtMoney(r.expected_low)} &ndash; ${fmtMoney(r.expected_high)}` : "&ndash;"}</td>
+      <td data-label="52-Wk Range">${rangeHtml}</td>
+      <td data-label="Expansion">
         <div class="progress-cell">
           <div class="progress-bar"><div class="${done ? "done" : ""}" style="width:${pct}%"></div></div>
           <span>${pct}%</span>
         </div>
       </td>
-      <td>${signalsHtml}</td>
-      <td class="div-earnings">${divEarningsHtml}</td>
-      <td class="vol10">${vol10Html}</td>
-      <td class="notes">${(r.notes || []).join("<br>")}</td>
+      <td data-label="Signals">${signalsHtml}</td>
+      <td class="div-earnings" data-label="Div / Earnings">${divEarningsHtml}</td>
+      <td class="vol10" data-label="Volume (10d)">${vol10Html}</td>
+      <td class="notes" data-label="Notes">${(r.notes || []).join("<br>")}</td>
     `;
     body.appendChild(tr);
   }
@@ -579,31 +582,14 @@ const HISTORY_DIR = "data/history";
 function setTab(tab) {
   el("tab-current").classList.toggle("active", tab === "current");
   el("tab-history").classList.toggle("active", tab === "history");
-  el("history-controls").style.display = tab === "history" ? "inline-flex" : "none";
-}
-
-async function loadHistoryDate(date) {
-  try {
-    const res = await fetch(`${HISTORY_DIR}/${date}.json?_=${Date.now()}`);
-    if (!res.ok) throw new Error(`Couldn't load the snapshot for ${date} (HTTP ${res.status}).`);
-    latestData = await res.json();
-    viewMode = "history";
-    updateLastUpdatedLabel();
-    renderTable();
-    const c = latestData.counts || {};
-    setStatus(`Snapshot ${date}: ${c.match ?? 0} triggered, ${c.watch ?? 0} on watch.`, "ok");
-  } catch (err) {
-    setStatus(err.message || String(err), "error");
-  }
 }
 
 async function openHistoryTab() {
   setTab("history");
+  setStatus("Loading history snapshots...");
   try {
     const res = await fetch(`${HISTORY_DIR}/index.json?_=${Date.now()}`);
     const dates = res.ok ? ((await res.json()).dates || []) : [];
-    const sel = el("history-date");
-    sel.innerHTML = "";
     if (!dates.length) {
       latestData = { results: [] };
       viewMode = "history";
@@ -611,13 +597,35 @@ async function openHistoryTab() {
       setStatus("No history snapshots yet — one is archived after every daily full scan.", "error");
       return;
     }
-    for (const d of dates) {
-      const o = document.createElement("option");
-      o.value = d;
-      o.textContent = d;
-      sel.appendChild(o);
+
+    // Load every day's snapshot and combine into one table, each row tagged
+    // with its scan date (the sortable Date column).
+    const snaps = await Promise.all(dates.map(async (d) => {
+      try {
+        const r = await fetch(`${HISTORY_DIR}/${d}.json?_=${Date.now()}`);
+        return r.ok ? { date: d, data: await r.json() } : null;
+      } catch (err) {
+        return null;
+      }
+    }));
+
+    const combined = [];
+    let newest = null, matches = 0, watch = 0;
+    for (const s of snaps.filter(Boolean)) {
+      const dd = s.data;
+      if (!newest || (dd.generated_at || "") > newest) newest = dd.generated_at;
+      matches += (dd.counts && dd.counts.match) || 0;
+      watch += (dd.counts && dd.counts.watch) || 0;
+      for (const row of dd.results || []) combined.push({ ...row, scan_date: s.date });
     }
-    await loadHistoryDate(dates[0]);
+
+    latestData = { generated_at: newest, duration_seconds: null,
+                   counts: { match: matches, watch: watch }, results: combined };
+    viewMode = "history";
+    sortState = { key: "scan_date", dir: "desc" };  // newest scans first
+    updateLastUpdatedLabel();
+    renderTable();
+    setStatus(`History: ${dates.length} scan day(s), ${combined.length} shortlisted row(s) (${matches} triggered, ${watch} watch).`, "ok");
   } catch (err) {
     setStatus(err.message || String(err), "error");
   }
@@ -634,7 +642,6 @@ el("tab-current").addEventListener("click", async () => {
   }
 });
 el("tab-history").addEventListener("click", openHistoryTab);
-el("history-date").addEventListener("change", (e) => loadHistoryDate(e.target.value));
 
 el("btn-refresh").addEventListener("click", triggerRefresh);
 el("btn-analyze").addEventListener("click", analyzeCustomList);
