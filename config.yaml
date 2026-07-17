@@ -170,6 +170,9 @@ output:
   # this small file periodically while scanning and the UI polls it.
   progress_json_path: "docs/data/progress.json"
   progress_commit_min_interval_seconds: 20
+  # Dated snapshots of each daily full scan for the UI's History tab /
+  # back-testing (one JSON per day + an index of available dates).
+  history_dir: "docs/data/history"
 
 logging:
   level: "INFO"

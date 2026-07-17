@@ -111,9 +111,10 @@ function renderTable() {
   const body = el("results-body");
   body.innerHTML = "";
 
-  // Custom-list mode shows every requested ticker unconditionally -- the
-  // whole point is a quick glance at YOUR list, including non-qualifiers.
-  const filtered = viewMode === "custom"
+  // Custom-list and history views show every row unconditionally -- custom
+  // because you asked about those exact tickers, history because a snapshot
+  // should be seen exactly as it was recorded.
+  const filtered = (viewMode === "custom" || viewMode === "history")
     ? (latestData.results || [])
     : (latestData.results || []).filter((r) => (r.expansion_progress ?? 0) >= threshold);
   const visible = sortResults(filtered);
@@ -430,6 +431,7 @@ async function triggerRefresh() {
     }
 
     viewMode = "full";
+    setTab("current");
     await loadFreshResultsViaApi();
     setStatus(`Done. Results updated ${new Date(latestData.generated_at).toLocaleString()}.`, "ok");
   } catch (err) {
@@ -481,6 +483,7 @@ async function analyzeCustomList() {
     }
     latestData = data;
     viewMode = "custom";
+    setTab("current");
     updateLastUpdatedLabel();
     renderTable();
     setStatus(`Custom analysis done: ${data.counts.match} triggered, ${data.counts.watch} on watch, ${data.counts.none} no setup.`, "ok");
@@ -570,6 +573,69 @@ el("btn-toggle-grid").addEventListener("click", () => {
   applyGridCollapsed(gridCollapsed);
 });
 
+// --- Current / History tabs -------------------------------------------------
+const HISTORY_DIR = "data/history";
+
+function setTab(tab) {
+  el("tab-current").classList.toggle("active", tab === "current");
+  el("tab-history").classList.toggle("active", tab === "history");
+  el("history-controls").style.display = tab === "history" ? "inline-flex" : "none";
+}
+
+async function loadHistoryDate(date) {
+  try {
+    const res = await fetch(`${HISTORY_DIR}/${date}.json?_=${Date.now()}`);
+    if (!res.ok) throw new Error(`Couldn't load the snapshot for ${date} (HTTP ${res.status}).`);
+    latestData = await res.json();
+    viewMode = "history";
+    updateLastUpdatedLabel();
+    renderTable();
+    const c = latestData.counts || {};
+    setStatus(`Snapshot ${date}: ${c.match ?? 0} triggered, ${c.watch ?? 0} on watch.`, "ok");
+  } catch (err) {
+    setStatus(err.message || String(err), "error");
+  }
+}
+
+async function openHistoryTab() {
+  setTab("history");
+  try {
+    const res = await fetch(`${HISTORY_DIR}/index.json?_=${Date.now()}`);
+    const dates = res.ok ? ((await res.json()).dates || []) : [];
+    const sel = el("history-date");
+    sel.innerHTML = "";
+    if (!dates.length) {
+      latestData = { results: [] };
+      viewMode = "history";
+      renderTable();
+      setStatus("No history snapshots yet — one is archived after every daily full scan.", "error");
+      return;
+    }
+    for (const d of dates) {
+      const o = document.createElement("option");
+      o.value = d;
+      o.textContent = d;
+      sel.appendChild(o);
+    }
+    await loadHistoryDate(dates[0]);
+  } catch (err) {
+    setStatus(err.message || String(err), "error");
+  }
+}
+
+el("tab-current").addEventListener("click", async () => {
+  setTab("current");
+  viewMode = "full";
+  try {
+    await loadSavedResults(true);
+    setStatus("Showing the latest scan results.", "ok");
+  } catch (err) {
+    setStatus(err.message || String(err), "error");
+  }
+});
+el("tab-history").addEventListener("click", openHistoryTab);
+el("history-date").addEventListener("change", (e) => loadHistoryDate(e.target.value));
+
 el("btn-refresh").addEventListener("click", triggerRefresh);
 el("btn-analyze").addEventListener("click", analyzeCustomList);
 el("custom-tickers").addEventListener("keydown", (e) => {
@@ -577,6 +643,7 @@ el("custom-tickers").addEventListener("keydown", (e) => {
 });
 el("btn-back-full").addEventListener("click", async () => {
   viewMode = "full";
+  setTab("current");
   setStatus("Loading full scan results...");
   try {
     await loadSavedResults(true);

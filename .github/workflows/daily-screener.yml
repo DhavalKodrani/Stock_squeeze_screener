@@ -95,7 +95,7 @@ jobs:
           git config user.name "screener-bot"
           git config user.email "actions@github.com"
           rm -f alerts.json alert_tickers.txt issue_body.md
-          git add shortlist_cache.json ticker_state.json docs/data/results.json docs/data/custom_results.json docs/data/progress.json 2>/dev/null || true
+          git add shortlist_cache.json ticker_state.json docs/data/results.json docs/data/custom_results.json docs/data/progress.json docs/data/history 2>/dev/null || true
           git diff --cached --quiet || git commit -m "Update cache + dashboard data [skip ci]"
           git pull --rebase || true
           git push || echo "Nothing to push"

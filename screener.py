@@ -1286,6 +1286,30 @@ def main():
         _write_ui_json(results, cfg, logger, duration_seconds,
                        "results_json_path", "docs/data/results.json", "full")
 
+        # Archive a dated snapshot of this full scan for the UI's History
+        # tab / back-testing. One file per calendar day (latest full scan of
+        # the day wins), plus an index the static site can enumerate.
+        try:
+            hist_dir = out_cfg.get("history_dir", "docs/data/history")
+            os.makedirs(hist_dir, exist_ok=True)
+            date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            with open(os.path.join(hist_dir, f"{date_str}.json"), "w", encoding="utf-8") as f:
+                json.dump(build_results_json(results, cfg, duration_seconds, mode="full"), f, indent=2)
+            idx_path = os.path.join(hist_dir, "index.json")
+            try:
+                with open(idx_path, encoding="utf-8") as f:
+                    idx = json.load(f)
+            except Exception:
+                idx = {"dates": []}
+            if date_str not in idx.get("dates", []):
+                idx.setdefault("dates", []).append(date_str)
+            idx["dates"] = sorted(set(idx["dates"]), reverse=True)
+            with open(idx_path, "w", encoding="utf-8") as f:
+                json.dump(idx, f, indent=2)
+            logger.info(f"Archived history snapshot {hist_dir}/{date_str}.json ({len(idx['dates'])} date(s) total).")
+        except Exception as e:
+            logger.warning(f"Failed to archive history snapshot (non-fatal): {e}")
+
         # Phone alert for every match from the daily scan.
         write_alerts(matches, cfg, logger)
 

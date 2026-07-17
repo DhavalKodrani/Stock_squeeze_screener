@@ -1,0 +1,178 @@
+{
+  "generated_at": "2026-07-16T21:44:43Z",
+  "duration_seconds": 970.3,
+  "mode": "full",
+  "criteria": {
+    "max_price": 1000000,
+    "min_price": 1.0,
+    "expansion_multiplier": 1.15,
+    "near_expansion_ratio": 0.75
+  },
+  "counts": {
+    "match": 2,
+    "watch": 0,
+    "none": 0
+  },
+  "results": [
+    {
+      "ticker": "MNTK",
+      "status": "match",
+      "current_price": 1.69,
+      "expected_low": 1.5545,
+      "expected_high": 1.8255,
+      "year_high": 2.57,
+      "year_low": 1.07,
+      "bandwidth_percentile": 6.67,
+      "avg_dollar_volume": 311491.68,
+      "volume_ratio": 1.6482,
+      "expansion_progress": 1.4332,
+      "confirmations_passed": 7,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": true,
+          "value": 57.45,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 0.0089,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 3.68,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": true,
+          "value": 1.6283,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": 1.6229,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": true,
+          "value": 1.635,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": 1.5766,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": false,
+          "value": 30.73,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "dividend_ttm": null,
+      "dividend_yield": null,
+      "next_earnings_date": null,
+      "earnings_in_days": null,
+      "recent_volumes": [
+        303792.0,
+        78400.0,
+        88600.0,
+        75300.0,
+        90300.0,
+        188000.0,
+        134500.0,
+        93800.0,
+        130600.0,
+        111400.0
+      ],
+      "notes": [
+        "Volume spike: 3.87x yesterday, 3.76x prior 3-day avg (need >= 2x either).",
+        "RSI change: +10.4 over last 5 days (47.1 -> 57.4; need >= +10).",
+        "Volume contracted then expanded on latest bar.",
+        "Bollinger band-width at 6.7th percentile of last 120 days.",
+        "Indicator confirmations: 7/8 passed. Failed: MFI."
+      ]
+    },
+    {
+      "ticker": "IEX",
+      "status": "match",
+      "current_price": 228.96,
+      "expected_low": 222.1801,
+      "expected_high": 235.7399,
+      "year_high": 229.4292,
+      "year_low": 154.9467,
+      "bandwidth_percentile": 4.17,
+      "avg_dollar_volume": 169875457.43,
+      "volume_ratio": 1.6153,
+      "expansion_progress": 1.4046,
+      "confirmations_passed": 7,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": true,
+          "value": 63.89,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": false,
+          "value": -0.1541,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 2.11,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": true,
+          "value": 224.7099,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": 222.0764,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": true,
+          "value": 211.4002,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": 223.8394,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": true,
+          "value": 58.79,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "dividend_ttm": null,
+      "dividend_yield": null,
+      "next_earnings_date": null,
+      "earnings_in_days": null,
+      "recent_volumes": [
+        1198476.0,
+        418500.0,
+        729000.0,
+        415200.0,
+        387300.0,
+        551600.0,
+        867400.0,
+        600900.0,
+        447400.0,
+        443100.0
+      ],
+      "notes": [
+        "Volume spike: 2.86x yesterday, 2.30x prior 3-day avg (need >= 2x either).",
+        "RSI change: +13.9 over last 5 days (49.9 -> 63.9; need >= +10).",
+        "Volume contracted then expanded on latest bar.",
+        "Bollinger band-width at 4.2th percentile of last 120 days.",
+        "Indicator confirmations: 7/8 passed. Failed: MACD."
+      ]
+    }
+  ]
+}

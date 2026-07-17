@@ -158,6 +158,11 @@
   .scan-chip.scan-hit { color: var(--green); font-weight: 700; font-size: 15.5px; }
   .scan-chip.scan-current { color: var(--red); font-weight: 700; border-color: var(--red); background: var(--red-bg); }
 
+  .tabs { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  .tab { padding: 7px 16px; border-radius: 7px; background: var(--btn-bg); border: 1px solid var(--border); }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  #history-date { padding: 7px 10px; border-radius: 7px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-family: inherit; font-size: 13px; }
+
   .signals { font-weight: 700; cursor: help; border-bottom: 1px dotted var(--muted); }
   .signals.sig-all { color: var(--green); }
   .signals.sig-some { color: var(--amber); }
@@ -282,6 +287,14 @@
   </div>
 
   <div class="panel">
+    <div class="tabs">
+      <button class="tab active" id="tab-current">Current</button>
+      <button class="tab" id="tab-history">History (back-test)</button>
+      <span id="history-controls" style="display:none; align-items:center; gap:8px;">
+        <label for="history-date" class="meta">Scan date:</label>
+        <select id="history-date"></select>
+      </span>
+    </div>
     <table id="results-table">
       <thead>
         <tr>
