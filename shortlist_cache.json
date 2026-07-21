@@ -1,13 +1,4 @@
 {
-  "timestamp": "2026-07-16T21:44:43.724456",
-  "tickers": {
-    "IEX": {
-      "year_high": 229.4292,
-      "year_low": 154.9467
-    },
-    "MNTK": {
-      "year_high": 2.57,
-      "year_low": 1.07
-    }
-  }
+  "timestamp": "2026-07-21T15:59:08.532344",
+  "tickers": {}
 }
