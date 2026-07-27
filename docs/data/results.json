@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-27T16:43:50Z",
-  "duration_seconds": 1122.1,
-  "mode": "full",
+  "generated_at": "2026-07-27T17:50:46Z",
+  "duration_seconds": 0.3,
+  "mode": "intraday",
   "criteria": {
     "max_price": 1000000,
     "min_price": 1.0,
@@ -9,90 +9,9 @@
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 1,
+    "match": 0,
     "watch": 0,
     "none": 0
   },
-  "results": [
-    {
-      "ticker": "SOCA",
-      "status": "match",
-      "current_price": 10.3,
-      "expected_low": 10.2925,
-      "expected_high": 10.3075,
-      "year_high": 10.3,
-      "year_low": 9.94,
-      "bandwidth_percentile": 6.67,
-      "avg_dollar_volume": 289945.01,
-      "volume_ratio": 14.9343,
-      "expansion_progress": 12.9863,
-      "confirmations_passed": 6,
-      "confirmations_total": 8,
-      "indicators": {
-        "rsi": {
-          "pass": true,
-          "value": 65.85,
-          "desc": "RSI in bullish-but-not-overbought band"
-        },
-        "macd": {
-          "pass": false,
-          "value": -0.0003,
-          "desc": "MACD line above signal line"
-        },
-        "momentum": {
-          "pass": true,
-          "value": 0.19,
-          "desc": "N-day rate of change positive (%)"
-        },
-        "lsma": {
-          "pass": true,
-          "value": 10.2833,
-          "desc": "Price above rising least-squares MA"
-        },
-        "ema": {
-          "pass": true,
-          "value": 10.2779,
-          "desc": "Price above EMA"
-        },
-        "ichimoku": {
-          "pass": true,
-          "value": 10.2375,
-          "desc": "Price above the Ichimoku cloud"
-        },
-        "vwap": {
-          "pass": true,
-          "value": 10.2918,
-          "desc": "Price above rolling VWAP"
-        },
-        "mfi": {
-          "pass": false,
-          "value": 96.12,
-          "desc": "Money Flow Index in bullish band"
-        }
-      },
-      "dividend_ttm": null,
-      "dividend_yield": null,
-      "next_earnings_date": null,
-      "earnings_in_days": null,
-      "recent_volumes": [
-        420400.0,
-        0.0,
-        0.0,
-        3400.0,
-        0.0,
-        0.0,
-        0.0,
-        15000.0,
-        3100.0,
-        31700.0
-      ],
-      "notes": [
-        "Volume spike: not enough volume history to measure.",
-        "RSI change: +10.1 over last 5 days (55.7 -> 65.9; need >= +10).",
-        "Volume contracted then expanded on latest bar.",
-        "Bollinger band-width at 6.7th percentile of last 120 days.",
-        "Indicator confirmations: 6/8 passed. Failed: MACD, MFI."
-      ]
-    }
-  ]
+  "results": []
 }
