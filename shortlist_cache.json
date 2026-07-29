@@ -1,4 +1,9 @@
 {
-  "timestamp": "2026-07-28T16:19:07.403074",
-  "tickers": {}
+  "timestamp": "2026-07-29T16:05:28.571348",
+  "tickers": {
+    "AEAQ": {
+      "year_high": 10.09,
+      "year_low": 9.78
+    }
+  }
 }
