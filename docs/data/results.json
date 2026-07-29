@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-29T16:05:28Z",
-  "duration_seconds": 794.1,
-  "mode": "full",
+  "generated_at": "2026-07-29T16:10:41Z",
+  "duration_seconds": 0.6,
+  "mode": "intraday",
   "criteria": {
     "max_price": 1000000,
     "min_price": 1.0,
@@ -9,90 +9,9 @@
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 1,
+    "match": 0,
     "watch": 0,
     "none": 0
   },
-  "results": [
-    {
-      "ticker": "AEAQ",
-      "status": "match",
-      "current_price": 10.02,
-      "expected_low": 10.0173,
-      "expected_high": 10.0227,
-      "year_high": 10.09,
-      "year_low": 9.78,
-      "bandwidth_percentile": 9.17,
-      "avg_dollar_volume": 339731.12,
-      "volume_ratio": 14.0098,
-      "expansion_progress": 12.1824,
-      "confirmations_passed": 6,
-      "confirmations_total": 8,
-      "indicators": {
-        "rsi": {
-          "pass": true,
-          "value": 74.76,
-          "desc": "RSI in bullish-but-not-overbought band"
-        },
-        "macd": {
-          "pass": false,
-          "value": -0.0001,
-          "desc": "MACD line above signal line"
-        },
-        "momentum": {
-          "pass": true,
-          "value": 0.1,
-          "desc": "N-day rate of change positive (%)"
-        },
-        "lsma": {
-          "pass": true,
-          "value": 10.0139,
-          "desc": "Price above rising least-squares MA"
-        },
-        "ema": {
-          "pass": true,
-          "value": 10.0072,
-          "desc": "Price above EMA"
-        },
-        "ichimoku": {
-          "pass": true,
-          "value": 10.01,
-          "desc": "Price above the Ichimoku cloud"
-        },
-        "vwap": {
-          "pass": true,
-          "value": 10.0158,
-          "desc": "Price above rolling VWAP"
-        },
-        "mfi": {
-          "pass": false,
-          "value": null,
-          "desc": "Money Flow Index in bullish band"
-        }
-      },
-      "dividend_ttm": null,
-      "dividend_yield": null,
-      "next_earnings_date": null,
-      "earnings_in_days": null,
-      "recent_volumes": [
-        475006.0,
-        6900.0,
-        50000.0,
-        0.0,
-        0.0,
-        0.0,
-        15400.0,
-        10000.0,
-        16600.0,
-        0.0
-      ],
-      "notes": [
-        "Volume spike: 68.84x yesterday, 25.04x prior 3-day avg (need >= 2x either).",
-        "RSI change: +10.9 over last 5 days (63.8 -> 74.8; need >= +10).",
-        "Volume contracted then expanded on latest bar.",
-        "Bollinger band-width at 9.2th percentile of last 120 days.",
-        "Indicator confirmations: 6/8 passed. Failed: MACD, MFI."
-      ]
-    }
-  ]
+  "results": []
 }
