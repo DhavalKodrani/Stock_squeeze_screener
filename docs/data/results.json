@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-10T15:23:04Z",
-  "duration_seconds": 1169.6,
-  "mode": "full",
+  "generated_at": "2026-08-10T15:42:58Z",
+  "duration_seconds": 0.5,
+  "mode": "intraday",
   "criteria": {
     "max_price": 1000000,
     "min_price": 1.0,
@@ -9,91 +9,9 @@
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 1,
+    "match": 0,
     "watch": 0,
     "none": 0
   },
-  "results": [
-    {
-      "ticker": "GNL-PB",
-      "status": "match",
-      "current_price": 22.0,
-      "expected_low": 21.7136,
-      "expected_high": 22.2864,
-      "year_high": 22.482,
-      "year_low": 19.4275,
-      "bandwidth_percentile": 2.5,
-      "avg_dollar_volume": 136954.4,
-      "volume_ratio": 7.3113,
-      "expansion_progress": 6.3576,
-      "confirmations_passed": 7,
-      "confirmations_total": 8,
-      "indicators": {
-        "rsi": {
-          "pass": true,
-          "value": 62.21,
-          "desc": "RSI in bullish-but-not-overbought band"
-        },
-        "macd": {
-          "pass": false,
-          "value": -0.0065,
-          "desc": "MACD line above signal line"
-        },
-        "momentum": {
-          "pass": true,
-          "value": 0.82,
-          "desc": "N-day rate of change positive (%)"
-        },
-        "lsma": {
-          "pass": true,
-          "value": 21.8612,
-          "desc": "Price above rising least-squares MA"
-        },
-        "ema": {
-          "pass": true,
-          "value": 21.7539,
-          "desc": "Price above EMA"
-        },
-        "ichimoku": {
-          "pass": true,
-          "value": 21.3484,
-          "desc": "Price above the Ichimoku cloud"
-        },
-        "vwap": {
-          "pass": true,
-          "value": 21.8698,
-          "desc": "Price above rolling VWAP"
-        },
-        "mfi": {
-          "pass": true,
-          "value": 67.22,
-          "desc": "Money Flow Index in bullish band"
-        }
-      },
-      "dividend_ttm": 1.7188,
-      "dividend_yield": 7.81,
-      "next_earnings_date": null,
-      "earnings_in_days": null,
-      "recent_volumes": [
-        45514.0,
-        3705.0,
-        1865.0,
-        1694.0,
-        1699.0,
-        1990.0,
-        2191.0,
-        23054.0,
-        4638.0,
-        3702.0
-      ],
-      "notes": [
-        "Volume spike: 12.28x yesterday, 18.80x prior 3-day avg (need >= 2x either).",
-        "RSI change: +10.9 over last 5 days (51.3 -> 62.2; need >= +10).",
-        "Volume contracted then expanded on latest bar.",
-        "Bollinger band-width at 2.5th percentile of last 120 days.",
-        "Indicator confirmations: 7/8 passed. Failed: MACD.",
-        "Pays a dividend: $1.7188/share over the last 12 months (7.81% yield)."
-      ]
-    }
-  ]
+  "results": []
 }
