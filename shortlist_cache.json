@@ -1,4 +1,9 @@
 {
-  "timestamp": "2026-08-07T15:10:26.262666",
-  "tickers": {}
+  "timestamp": "2026-08-10T15:23:04.905913",
+  "tickers": {
+    "GNL-PB": {
+      "year_high": 22.482,
+      "year_low": 19.4275
+    }
+  }
 }
