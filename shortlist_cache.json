@@ -1,4 +1,29 @@
 {
-  "timestamp": "2026-08-26T15:06:21.152615",
-  "tickers": {}
+  "timestamp": "2026-08-27T23:54:10.990478",
+  "tickers": {
+    "AFGC": {
+      "year_high": 19.7648,
+      "year_low": 17.58
+    },
+    "AIO": {
+      "year_high": 28.2164,
+      "year_low": 19.1915
+    },
+    "AVPT": {
+      "year_high": 16.77,
+      "year_low": 8.835
+    },
+    "CII": {
+      "year_high": 25.8694,
+      "year_low": 18.8574
+    },
+    "GAP": {
+      "year_high": 28.8847,
+      "year_low": 17.9438
+    },
+    "TUYA": {
+      "year_high": 2.8071,
+      "year_low": 1.61
+    }
+  }
 }
