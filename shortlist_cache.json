@@ -1,9 +1,33 @@
 {
-  "timestamp": "2026-08-28T23:42:55.291180",
+  "timestamp": "2026-08-31T20:08:12.417673",
   "tickers": {
-    "EOI": {
-      "year_high": 20.2554,
-      "year_low": 17.4431
+    "ABR-PF": {
+      "year_high": 23.1981,
+      "year_low": 19.789
+    },
+    "AERT": {
+      "year_high": 9.6,
+      "year_low": 2.08
+    },
+    "BSL": {
+      "year_high": 13.2223,
+      "year_low": 11.9646
+    },
+    "CMND": {
+      "year_high": 524.0,
+      "year_low": 1.43
+    },
+    "ECC": {
+      "year_high": 6.0595,
+      "year_low": 3.2087
+    },
+    "LDP": {
+      "year_high": 21.1753,
+      "year_low": 18.7517
+    },
+    "NRT": {
+      "year_high": 9.9178,
+      "year_low": 4.3061
     }
   }
 }
