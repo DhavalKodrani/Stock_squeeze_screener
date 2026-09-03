@@ -1,4 +1,13 @@
 {
-  "timestamp": "2026-09-02T18:04:29.855406",
-  "tickers": {}
+  "timestamp": "2026-09-03T18:02:58.047748",
+  "tickers": {
+    "NYXH": {
+      "year_high": 6.875,
+      "year_low": 1.26
+    },
+    "VRM": {
+      "year_high": 30.0,
+      "year_low": 6.8
+    }
+  }
 }
