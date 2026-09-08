@@ -1,4 +1,9 @@
 {
-  "timestamp": "2026-09-04T17:43:20.579486",
-  "tickers": {}
+  "timestamp": "2026-09-08T18:10:11.287552",
+  "tickers": {
+    "RVI": {
+      "year_high": 77.39,
+      "year_low": 21.0
+    }
+  }
 }
