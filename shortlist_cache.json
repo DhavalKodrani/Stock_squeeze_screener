@@ -1,9 +1,25 @@
 {
-  "timestamp": "2026-09-08T18:10:11.287552",
+  "timestamp": "2026-09-09T18:04:13.667183",
   "tickers": {
-    "RVI": {
-      "year_high": 77.39,
-      "year_low": 21.0
+    "CMPS": {
+      "year_high": 15.87,
+      "year_low": 4.82
+    },
+    "INKT": {
+      "year_high": 16.98,
+      "year_low": 8.48
+    },
+    "NAUT": {
+      "year_high": 4.31,
+      "year_low": 0.66
+    },
+    "SCOP": {
+      "year_high": 15.0,
+      "year_low": 7.45
+    },
+    "SLVO": {
+      "year_high": 76.0101,
+      "year_low": 51.9249
     }
   }
 }
