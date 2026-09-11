@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-11T17:55:11Z",
-  "duration_seconds": 924.3,
-  "mode": "full",
+  "generated_at": "2026-09-11T18:22:04Z",
+  "duration_seconds": 0.3,
+  "mode": "intraday",
   "criteria": {
     "max_price": 1000000,
     "min_price": 1.0,
@@ -9,90 +9,9 @@
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 1,
+    "match": 0,
     "watch": 0,
     "none": 0
   },
-  "results": [
-    {
-      "ticker": "OIM",
-      "status": "match",
-      "current_price": 10.14,
-      "expected_low": 10.1368,
-      "expected_high": 10.1432,
-      "year_high": 10.33,
-      "year_low": 9.5,
-      "bandwidth_percentile": 2.73,
-      "avg_dollar_volume": 341971.51,
-      "volume_ratio": 2.2001,
-      "expansion_progress": 1.9132,
-      "confirmations_passed": 6,
-      "confirmations_total": 8,
-      "indicators": {
-        "rsi": {
-          "pass": true,
-          "value": 68.01,
-          "desc": "RSI in bullish-but-not-overbought band"
-        },
-        "macd": {
-          "pass": true,
-          "value": 0.0005,
-          "desc": "MACD line above signal line"
-        },
-        "momentum": {
-          "pass": true,
-          "value": 0.2,
-          "desc": "N-day rate of change positive (%)"
-        },
-        "lsma": {
-          "pass": true,
-          "value": 10.1252,
-          "desc": "Price above rising least-squares MA"
-        },
-        "ema": {
-          "pass": true,
-          "value": 10.1211,
-          "desc": "Price above EMA"
-        },
-        "ichimoku": {
-          "pass": false,
-          "value": 10.16,
-          "desc": "Price above the Ichimoku cloud"
-        },
-        "vwap": {
-          "pass": true,
-          "value": 10.1269,
-          "desc": "Price above rolling VWAP"
-        },
-        "mfi": {
-          "pass": false,
-          "value": 97.52,
-          "desc": "Money Flow Index in bullish band"
-        }
-      },
-      "dividend_ttm": null,
-      "dividend_yield": null,
-      "next_earnings_date": null,
-      "earnings_in_days": null,
-      "recent_volumes": [
-        74200.0,
-        2900.0,
-        200.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        300.0
-      ],
-      "notes": [
-        "Volume spike: 25.59x yesterday, 71.81x prior 3-day avg (need >= 2x either).",
-        "RSI change: +15.4 over last 5 days (52.6 -> 68.0; need >= +10).",
-        "Volume contracted then expanded on latest bar.",
-        "Bollinger band-width at 2.7th percentile of last 120 days.",
-        "Indicator confirmations: 6/8 passed. Failed: ICHIMOKU, MFI."
-      ]
-    }
-  ]
+  "results": []
 }
