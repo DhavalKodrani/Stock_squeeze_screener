@@ -1,4 +1,9 @@
 {
-  "timestamp": "2026-09-15T18:16:45.502514",
-  "tickers": {}
+  "timestamp": "2026-09-16T18:14:47.756176",
+  "tickers": {
+    "IGAC": {
+      "year_high": 10.1,
+      "year_low": 9.82
+    }
+  }
 }
