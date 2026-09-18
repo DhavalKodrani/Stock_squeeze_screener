@@ -1,13 +1,9 @@
 {
-  "timestamp": "2026-09-17T18:19:46.586951",
+  "timestamp": "2026-09-18T17:54:16.305022",
   "tickers": {
-    "GASS": {
-      "year_high": 10.55,
-      "year_low": 6.12
-    },
-    "MGNI": {
-      "year_high": 26.838,
-      "year_low": 10.82
+    "IMOS": {
+      "year_high": 78.35,
+      "year_low": 18.4483
     }
   }
 }
