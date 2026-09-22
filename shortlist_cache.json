@@ -1,4 +1,17 @@
 {
-  "timestamp": "2026-09-21T19:27:10.134980",
-  "tickers": {}
+  "timestamp": "2026-09-22T18:18:43.952846",
+  "tickers": {
+    "OMER": {
+      "year_high": 20.94,
+      "year_low": 4.06
+    },
+    "POCI": {
+      "year_high": 6.15,
+      "year_low": 3.55
+    },
+    "VFF": {
+      "year_high": 4.99,
+      "year_low": 1.805
+    }
+  }
 }
