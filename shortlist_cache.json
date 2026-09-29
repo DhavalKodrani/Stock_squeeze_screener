@@ -1,13 +1,4 @@
 {
-  "timestamp": "2026-09-28T20:43:57.101403",
-  "tickers": {
-    "FSEA": {
-      "year_high": 17.25,
-      "year_low": 11.075
-    },
-    "KOYN": {
-      "year_high": 10.25,
-      "year_low": 9.85
-    }
-  }
+  "timestamp": "2026-09-29T19:29:23.691731",
+  "tickers": {}
 }
