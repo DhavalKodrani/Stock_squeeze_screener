@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-01T19:37:43Z",
-  "duration_seconds": 975.8,
-  "mode": "full",
+  "generated_at": "2026-10-02T14:04:59Z",
+  "duration_seconds": 0.5,
+  "mode": "intraday",
   "criteria": {
     "max_price": 1000000,
     "min_price": 1.0,
@@ -9,90 +9,9 @@
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 1,
+    "match": 0,
     "watch": 0,
     "none": 0
   },
-  "results": [
-    {
-      "ticker": "KFII",
-      "status": "match",
-      "current_price": 10.68,
-      "expected_low": 10.6704,
-      "expected_high": 10.6896,
-      "year_high": 10.69,
-      "year_low": 10.21,
-      "bandwidth_percentile": 5.83,
-      "avg_dollar_volume": 439642.75,
-      "volume_ratio": 1.6641,
-      "expansion_progress": 1.447,
-      "confirmations_passed": 7,
-      "confirmations_total": 8,
-      "indicators": {
-        "rsi": {
-          "pass": true,
-          "value": 68.87,
-          "desc": "RSI in bullish-but-not-overbought band"
-        },
-        "macd": {
-          "pass": false,
-          "value": -0.0001,
-          "desc": "MACD line above signal line"
-        },
-        "momentum": {
-          "pass": true,
-          "value": 0.19,
-          "desc": "N-day rate of change positive (%)"
-        },
-        "lsma": {
-          "pass": true,
-          "value": 10.6768,
-          "desc": "Price above rising least-squares MA"
-        },
-        "ema": {
-          "pass": true,
-          "value": 10.6618,
-          "desc": "Price above EMA"
-        },
-        "ichimoku": {
-          "pass": true,
-          "value": 10.6227,
-          "desc": "Price above the Ichimoku cloud"
-        },
-        "vwap": {
-          "pass": true,
-          "value": 10.6635,
-          "desc": "Price above rolling VWAP"
-        },
-        "mfi": {
-          "pass": true,
-          "value": 50.21,
-          "desc": "Money Flow Index in bullish band"
-        }
-      },
-      "dividend_ttm": null,
-      "dividend_yield": null,
-      "next_earnings_date": null,
-      "earnings_in_days": null,
-      "recent_volumes": [
-        68501.0,
-        51200.0,
-        0.0,
-        0.0,
-        125000.0,
-        300100.0,
-        73400.0,
-        0.0,
-        0.0,
-        200.0
-      ],
-      "notes": [
-        "Volume spike: 1.34x yesterday, 4.01x prior 3-day avg (need >= 2x either).",
-        "RSI change: +10.5 over last 5 days (58.3 -> 68.9; need >= +10).",
-        "Volume contracted then expanded on latest bar.",
-        "Bollinger band-width at 5.8th percentile of last 120 days.",
-        "Indicator confirmations: 7/8 passed. Failed: MACD."
-      ]
-    }
-  ]
+  "results": []
 }
