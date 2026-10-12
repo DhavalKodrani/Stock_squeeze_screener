@@ -1,4 +1,9 @@
 {
-  "timestamp": "2026-10-09T19:33:09.066276",
-  "tickers": {}
+  "timestamp": "2026-10-12T22:18:07.463721",
+  "tickers": {
+    "USL": {
+      "year_high": 60.63,
+      "year_low": 32.25
+    }
+  }
 }
