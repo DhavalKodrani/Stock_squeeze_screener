@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T16:19:23Z",
-  "duration_seconds": 0.0,
-  "mode": "intraday",
+  "generated_at": "2026-10-26T20:07:05Z",
+  "duration_seconds": 1116.4,
+  "mode": "full",
   "criteria": {
     "max_price": 1000000,
     "min_price": 1.0,
@@ -10,8 +10,89 @@
   },
   "counts": {
     "match": 0,
-    "watch": 0,
+    "watch": 1,
     "none": 0
   },
-  "results": []
+  "results": [
+    {
+      "ticker": "LEGN",
+      "status": "watch",
+      "current_price": 20.37,
+      "expected_low": 18.8966,
+      "expected_high": 21.8434,
+      "year_high": 37.5,
+      "year_low": 16.24,
+      "bandwidth_percentile": 7.5,
+      "avg_dollar_volume": 40766085.46,
+      "volume_ratio": 1.0985,
+      "expansion_progress": 0.9552,
+      "confirmations_passed": 7,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": true,
+          "value": 59.12,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 0.1941,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 14.44,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": true,
+          "value": 19.0433,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": 19.0316,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 22.65,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": 18.8799,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": true,
+          "value": 50.83,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "dividend_ttm": null,
+      "dividend_yield": null,
+      "next_earnings_date": null,
+      "earnings_in_days": null,
+      "recent_volumes": [
+        2198410.0,
+        979600.0,
+        1197800.0,
+        1559900.0,
+        1137000.0,
+        1894700.0,
+        2961700.0,
+        1574500.0,
+        3534800.0,
+        2458900.0
+      ],
+      "notes": [
+        "Volume spike: 2.24x yesterday, 1.76x prior 3-day avg (need >= 2x either).",
+        "RSI change: +11.7 over last 5 days (47.4 -> 59.1; need >= +10).",
+        "Volume approaching expansion trigger (96% of the way there).",
+        "Bollinger band-width at 7.5th percentile of last 120 days.",
+        "Indicator confirmations: 7/8 passed. Failed: ICHIMOKU."
+      ]
+    }
+  ]
 }

@@ -1,17 +1,9 @@
 {
-  "timestamp": "2026-10-23T18:23:19.111571",
+  "timestamp": "2026-10-26T20:07:05.439737",
   "tickers": {
-    "CV": {
-      "year_high": 15.37,
-      "year_low": 4.5
-    },
-    "DULL": {
-      "year_high": 114.75,
-      "year_low": 37.18
-    },
-    "IRHO": {
-      "year_high": 10.14,
-      "year_low": 9.85
+    "LEGN": {
+      "year_high": 37.5,
+      "year_low": 16.24
     }
   }
 }
