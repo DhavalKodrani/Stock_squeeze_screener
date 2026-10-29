@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-29T14:28:25Z",
-  "duration_seconds": 0.0,
-  "mode": "intraday",
+  "generated_at": "2026-10-29T19:47:50Z",
+  "duration_seconds": 1171.9,
+  "mode": "full",
   "criteria": {
     "max_price": 1000000,
     "min_price": 1.0,
@@ -10,8 +10,90 @@
   },
   "counts": {
     "match": 0,
-    "watch": 0,
+    "watch": 1,
     "none": 0
   },
-  "results": []
+  "results": [
+    {
+      "ticker": "JLS",
+      "status": "watch",
+      "current_price": 16.32,
+      "expected_low": 16.0618,
+      "expected_high": 16.5782,
+      "year_high": 17.8078,
+      "year_low": 15.8586,
+      "bandwidth_percentile": 5.0,
+      "avg_dollar_volume": 371240.83,
+      "volume_ratio": 0.9694,
+      "expansion_progress": 0.843,
+      "confirmations_passed": 6,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": true,
+          "value": 55.45,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 0.0243,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 0.68,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": true,
+          "value": 16.264,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": 16.2188,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 16.627,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": 16.1761,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": false,
+          "value": 34.32,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "dividend_ttm": 1.848,
+      "dividend_yield": 11.32,
+      "next_earnings_date": null,
+      "earnings_in_days": null,
+      "recent_volumes": [
+        22052.0,
+        11400.0,
+        12400.0,
+        7700.0,
+        20800.0,
+        30300.0,
+        40400.0,
+        35700.0,
+        10500.0,
+        3500.0
+      ],
+      "notes": [
+        "Volume spike: 1.93x yesterday, 2.10x prior 3-day avg (need >= 2x either).",
+        "RSI change: +10.6 over last 5 days (44.9 -> 55.4; need >= +10).",
+        "Volume approaching expansion trigger (84% of the way there).",
+        "Bollinger band-width at 5.0th percentile of last 120 days.",
+        "Indicator confirmations: 6/8 passed. Failed: ICHIMOKU, MFI.",
+        "Pays a dividend: $1.8480/share over the last 12 months (11.32% yield)."
+      ]
+    }
+  ]
 }
