@@ -1,21 +1,9 @@
 {
-  "timestamp": "2026-11-02T22:53:05.294300",
+  "timestamp": "2026-11-03T20:44:19.909591",
   "tickers": {
-    "BEP": {
-      "year_high": 37.6491,
-      "year_low": 25.3912
-    },
-    "BIP": {
-      "year_high": 43.5141,
-      "year_low": 32.0678
-    },
-    "PAY": {
-      "year_high": 45.31,
-      "year_low": 20.11
-    },
-    "SNWV": {
-      "year_high": 36.2,
-      "year_low": 3.92
+    "SDHI": {
+      "year_high": 10.6,
+      "year_low": 10.21
     }
   }
 }
