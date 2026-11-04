@@ -1,9 +1,13 @@
 {
-  "timestamp": "2026-11-03T20:44:19.909591",
+  "timestamp": "2026-11-04T20:52:31.488692",
   "tickers": {
-    "SDHI": {
-      "year_high": 10.6,
-      "year_low": 10.21
+    "BEKE": {
+      "year_high": 19.765,
+      "year_low": 13.81
+    },
+    "GNE": {
+      "year_high": 17.285,
+      "year_low": 12.5568
     }
   }
 }
