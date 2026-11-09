@@ -1,4 +1,9 @@
 {
-  "timestamp": "2026-11-06T20:29:33.552232",
-  "tickers": {}
+  "timestamp": "2026-11-09T23:33:22.785872",
+  "tickers": {
+    "RNAC": {
+      "year_high": 11.0,
+      "year_low": 5.6
+    }
+  }
 }
