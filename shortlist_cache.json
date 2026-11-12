@@ -1,4 +1,9 @@
 {
-  "timestamp": "2026-11-11T21:23:12.931656",
-  "tickers": {}
+  "timestamp": "2026-11-12T21:35:21.698768",
+  "tickers": {
+    "BACC": {
+      "year_high": 11.1,
+      "year_low": 10.11
+    }
+  }
 }

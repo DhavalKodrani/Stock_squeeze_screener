@@ -1,0 +1,98 @@
+{
+  "generated_at": "2026-11-12T21:35:21Z",
+  "duration_seconds": 779.0,
+  "mode": "full",
+  "criteria": {
+    "max_price": 1000000,
+    "min_price": 1.0,
+    "expansion_multiplier": 1.15,
+    "near_expansion_ratio": 0.75
+  },
+  "counts": {
+    "match": 1,
+    "watch": 0,
+    "none": 0
+  },
+  "results": [
+    {
+      "ticker": "BACC",
+      "status": "match",
+      "current_price": 10.5,
+      "expected_low": 10.4727,
+      "expected_high": 10.5273,
+      "year_high": 11.1,
+      "year_low": 10.11,
+      "bandwidth_percentile": 9.17,
+      "avg_dollar_volume": 3583100.85,
+      "volume_ratio": 1.1521,
+      "expansion_progress": 1.0018,
+      "confirmations_passed": 7,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": true,
+          "value": 64.17,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 0.0054,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": true,
+          "value": 0.38,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": true,
+          "value": 10.4885,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": 10.471,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": false,
+          "value": 10.6,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": 10.455,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": true,
+          "value": 71.41,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "dividend_ttm": null,
+      "dividend_yield": null,
+      "next_earnings_date": null,
+      "earnings_in_days": null,
+      "recent_volumes": [
+        393154.0,
+        26000.0,
+        350600.0,
+        106100.0,
+        100.0,
+        132400.0,
+        181800.0,
+        216400.0,
+        6300.0,
+        110500.0
+      ],
+      "notes": [
+        "Volume spike: 15.12x yesterday, 2.44x prior 3-day avg (need >= 2x either).",
+        "RSI change: +12.2 over last 5 days (52.0 -> 64.2; need >= +10).",
+        "Volume contracted then expanded on latest bar.",
+        "Bollinger band-width at 9.2th percentile of last 120 days.",
+        "Indicator confirmations: 7/8 passed. Failed: ICHIMOKU."
+      ]
+    }
+  ]
+}
