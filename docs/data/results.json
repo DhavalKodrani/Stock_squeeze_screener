@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-13T20:32:08Z",
-  "duration_seconds": 0.0,
-  "mode": "intraday",
+  "generated_at": "2026-11-13T20:59:35Z",
+  "duration_seconds": 690.9,
+  "mode": "full",
   "criteria": {
     "max_price": 1000000,
     "min_price": 1.0,
