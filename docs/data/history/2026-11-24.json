@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-24T01:49:34Z",
-  "duration_seconds": 998.9,
+  "generated_at": "2026-11-24T23:40:25Z",
+  "duration_seconds": 891.2,
   "mode": "full",
   "criteria": {
     "max_price": 1000000,
@@ -9,9 +9,170 @@
     "near_expansion_ratio": 0.75
   },
   "counts": {
-    "match": 0,
+    "match": 2,
     "watch": 0,
     "none": 0
   },
-  "results": []
+  "results": [
+    {
+      "ticker": "AVZO",
+      "status": "match",
+      "current_price": 5.1,
+      "expected_low": 2.7027,
+      "expected_high": 7.4973,
+      "year_high": 6.2278,
+      "year_low": -13.6531,
+      "bandwidth_percentile": 0.83,
+      "avg_dollar_volume": 350208.07,
+      "volume_ratio": 6.5746,
+      "expansion_progress": 5.717,
+      "confirmations_passed": 5,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": false,
+          "value": 96.65,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 1.7018,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": false,
+          "value": -140.6,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": true,
+          "value": -7.2251,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": -9.5727,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": true,
+          "value": -13.3382,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": -4.2794,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": false,
+          "value": 29.8,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "dividend_ttm": null,
+      "dividend_yield": null,
+      "next_earnings_date": null,
+      "earnings_in_days": null,
+      "recent_volumes": [
+        451465.0,
+        197800.0,
+        50500.0,
+        40700.0,
+        28800.0,
+        44000.0,
+        44500.0,
+        10900.0,
+        23300.0,
+        44500.0
+      ],
+      "notes": [
+        "Volume spike: 2.28x yesterday, 4.69x prior 3-day avg (need >= 2x either).",
+        "RSI change: +30.5 over last 5 days (66.2 -> 96.7; need >= +10).",
+        "Volume contracted then expanded on latest bar.",
+        "Bollinger band-width at 0.8th percentile of last 120 days.",
+        "Indicator confirmations: 5/8 passed. Failed: RSI, MOMENTUM, MFI."
+      ]
+    },
+    {
+      "ticker": "RLYB",
+      "status": "match",
+      "current_price": 4.19,
+      "expected_low": 1.9799,
+      "expected_high": 6.4001,
+      "year_high": 4.85,
+      "year_low": -13.6531,
+      "bandwidth_percentile": 0.83,
+      "avg_dollar_volume": 204157.75,
+      "volume_ratio": 4.0595,
+      "expansion_progress": 3.53,
+      "confirmations_passed": 6,
+      "confirmations_total": 8,
+      "indicators": {
+        "rsi": {
+          "pass": false,
+          "value": 96.47,
+          "desc": "RSI in bullish-but-not-overbought band"
+        },
+        "macd": {
+          "pass": true,
+          "value": 1.0464,
+          "desc": "MACD line above signal line"
+        },
+        "momentum": {
+          "pass": false,
+          "value": -133.57,
+          "desc": "N-day rate of change positive (%)"
+        },
+        "lsma": {
+          "pass": true,
+          "value": -9.7042,
+          "desc": "Price above rising least-squares MA"
+        },
+        "ema": {
+          "pass": true,
+          "value": -11.04,
+          "desc": "Price above EMA"
+        },
+        "ichimoku": {
+          "pass": true,
+          "value": -13.3064,
+          "desc": "Price above the Ichimoku cloud"
+        },
+        "vwap": {
+          "pass": true,
+          "value": -9.1072,
+          "desc": "Price above rolling VWAP"
+        },
+        "mfi": {
+          "pass": true,
+          "value": 73.19,
+          "desc": "Money Flow Index in bullish band"
+        }
+      },
+      "dividend_ttm": null,
+      "dividend_yield": null,
+      "next_earnings_date": null,
+      "earnings_in_days": null,
+      "recent_volumes": [
+        197800.0,
+        50500.0,
+        40700.0,
+        28800.0,
+        44000.0,
+        44500.0,
+        10900.0,
+        23300.0,
+        44500.0,
+        19900.0
+      ],
+      "notes": [
+        "Volume spike: 3.92x yesterday, 4.95x prior 3-day avg (need >= 2x either).",
+        "RSI change: +32.4 over last 5 days (64.0 -> 96.5; need >= +10).",
+        "Volume contracted then expanded on latest bar.",
+        "Bollinger band-width at 0.8th percentile of last 120 days.",
+        "Indicator confirmations: 6/8 passed. Failed: RSI, MOMENTUM."
+      ]
+    }
+  ]
 }
