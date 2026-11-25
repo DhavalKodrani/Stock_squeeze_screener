@@ -1,12 +1,8 @@
 {
-  "timestamp": "2026-11-24T23:40:25.312076",
+  "timestamp": "2026-11-25T23:13:15.613692",
   "tickers": {
-    "AVZO": {
-      "year_high": 6.2278,
-      "year_low": -13.6531
-    },
     "RLYB": {
-      "year_high": 4.85,
+      "year_high": 6.228,
       "year_low": -13.6531
     }
   }
