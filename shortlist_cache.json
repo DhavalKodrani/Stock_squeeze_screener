@@ -1,4 +1,21 @@
 {
-  "timestamp": "2026-11-26T23:02:40.757352",
-  "tickers": {}
+  "timestamp": "2026-11-27T22:43:18.251265",
+  "tickers": {
+    "COCH": {
+      "year_high": 9.54,
+      "year_low": 3.63
+    },
+    "DV": {
+      "year_high": 13.65,
+      "year_low": 8.6
+    },
+    "PMTR": {
+      "year_high": 10.5,
+      "year_low": 10.2
+    },
+    "TMTS": {
+      "year_high": 10.45,
+      "year_low": 9.9
+    }
+  }
 }
